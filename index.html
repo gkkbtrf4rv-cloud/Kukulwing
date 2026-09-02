@@ -29,6 +29,12 @@ footer{background:#030303;border-top:1px solid #ffffff16;padding:35px 0 45px;tex
 .float{position:fixed;right:18px;bottom:18px;z-index:60;background:#20c65a;color:#fff;text-decoration:none;font-weight:1000;padding:13px 17px;border-radius:999px;box-shadow:0 8px 30px #0009}
 @media(max-width:850px){.hero{grid-template-columns:1fr;text-align:center;padding-top:28px}.hero p{margin-left:auto;margin-right:auto}.kicker{border-left:0;border-bottom:3px solid var(--red);padding:0 0 5px}.hero-logo{order:-1}.hero-logo img{max-height:430px}.grid{grid-template-columns:repeat(2,1fr)}.info{grid-template-columns:1fr}.callout{align-items:flex-start;flex-direction:column}.navlinks{max-width:55vw}.quick{grid-template-columns:1fr}}
 @media(max-width:520px){.nav{min-height:62px}.brand img{width:42px;height:42px}.brand span{font-size:1rem}.navlinks a{font-size:.68rem;padding:8px}.hero h1{font-size:3.8rem;letter-spacing:-3px}.hero-logo img{max-height:330px}.grid{grid-template-columns:1fr}.section{padding:42px 0}.card{padding:16px}.float{right:12px;bottom:12px}.callout .phone{white-space:normal}}
+
+.food-img{width:100%;height:185px;object-fit:cover;border-radius:10px;margin-bottom:14px;border:1px solid #ffffff18;background:#090909;display:block}
+.card.food-card{padding:12px 12px 18px}
+.card.food-card h3,.card.food-card p,.card.food-card .price,.card.food-card .tag{margin-left:7px;margin-right:7px}
+@media(max-width:520px){.food-img{height:210px}}
+
 </style>
 </head>
 <body>
@@ -63,11 +69,11 @@ footer{background:#030303;border-top:1px solid #ffffff16;padding:35px 0 45px;tex
   <div class="section-head"><div class="eyebrow">🍗 Crujientes y deliciosas</div><h2>Alitas</h2></div>
   <div class="notice"><b>Importante:</b> Todos nuestros productos se cocinan de 0 a 100%, con una duración de espera de 25 min. Gracias por su comprensión.</div>
   <div class="grid">
-    <article class="card"><h3>Salsa BBQ</h3><p>10 piezas + 1 aderezo 20 oz.</p><div class="price">$100</div></article>
-    <article class="card"><h3>Lemon Pepper</h3><p>10 piezas con el toque adecuado de limón y pimienta + 1 aderezo 20 oz.</p><div class="price">$100</div></article>
-    <article class="card"><h3>Mango Habanero</h3><p>10 piezas con salsa Mango-habanero + 1 aderezo 20 oz.</p><div class="price">$100</div></article>
-    <article class="card"><h3>Buffalo</h3><p>10 piezas bañadas con salsa Buffalo picosas + 1 aderezo 20 oz.</p><div class="price">$100</div></article>
-    <article class="card"><h3>Kukul Specials</h3><p>10 piezas con queso manchego gratinado, un sabor diferente que debes probar + 1 aderezo 20 oz.</p><div class="price">$130</div></article>
+    <article class="card food-card"><img class="food-img" src="assets/food/alitas-bbq.jpg" alt="Alitas Salsa BBQ, imagen de referencia del menú" loading="lazy" decoding="async"><h3>Salsa BBQ</h3><p>10 piezas + 1 aderezo 20 oz.</p><div class="price">$100</div></article>
+    <article class="card food-card"><img class="food-img" src="assets/food/alitas-lemon-pepper.jpg" alt="Alitas Lemon Pepper, imagen de referencia del menú" loading="lazy" decoding="async"><h3>Lemon Pepper</h3><p>10 piezas con el toque adecuado de limón y pimienta + 1 aderezo 20 oz.</p><div class="price">$100</div></article>
+    <article class="card food-card"><img class="food-img" src="assets/food/alitas-mango-habanero.jpg" alt="Alitas Mango Habanero, imagen de referencia del menú" loading="lazy" decoding="async"><h3>Mango Habanero</h3><p>10 piezas con salsa Mango-habanero + 1 aderezo 20 oz.</p><div class="price">$100</div></article>
+    <article class="card food-card"><img class="food-img" src="assets/food/alitas-buffalo.jpg" alt="Alitas Buffalo, imagen de referencia del menú" loading="lazy" decoding="async"><h3>Buffalo</h3><p>10 piezas bañadas con salsa Buffalo picosas + 1 aderezo 20 oz.</p><div class="price">$100</div></article>
+    <article class="card food-card"><img class="food-img" src="assets/food/alitas-kukul-specials.jpg" alt="Kukul Specials, imagen ilustrativa tomada del menú" loading="lazy" decoding="async"><h3>Kukul Specials</h3><p>10 piezas con queso manchego gratinado, un sabor diferente que debes probar + 1 aderezo 20 oz.</p><div class="price">$130</div></article>
   </div>
   <p style="color:#aaa;margin-top:14px"><b>Aderezos:</b> Ranch · Queso amarillo · Miel mostaza.</p>
 </section>
@@ -75,11 +81,11 @@ footer{background:#030303;border-top:1px solid #ffffff16;padding:35px 0 45px;tex
 <section class="container section" id="boneles">
   <div class="section-head"><div class="eyebrow">🔥 Todo el sabor, sin hueso</div><h2>Boneles</h2></div>
   <div class="grid">
-    <article class="card"><h3>Salsa BBQ</h3><p>10 piezas + 1 aderezo 20 oz.</p><div class="price">$100</div></article>
-    <article class="card"><h3>Lemon Pepper</h3><p>10 piezas con el toque adecuado de limón y pimienta + 1 aderezo 20 oz.</p><div class="price">$100</div></article>
-    <article class="card"><h3>Mango Habanero</h3><p>10 piezas con salsa Mango-habanero + 1 aderezo 20 oz.</p><div class="price">$100</div></article>
-    <article class="card"><h3>Buffalo</h3><p>10 piezas bañadas con salsa Buffalo picosas + 1 aderezo 20 oz.</p><div class="price">$100</div></article>
-    <article class="card"><h3>Kukul Specials</h3><p>10 piezas con queso manchego gratinado, un sabor diferente que debes probar + 1 aderezo 20 oz.</p><div class="price">$130</div></article>
+    <article class="card food-card"><img class="food-img" src="assets/food/boneles-bbq.jpg" alt="Boneles Salsa BBQ, imagen de referencia del menú" loading="lazy" decoding="async"><h3>Salsa BBQ</h3><p>10 piezas + 1 aderezo 20 oz.</p><div class="price">$100</div></article>
+    <article class="card food-card"><img class="food-img" src="assets/food/boneles-lemon-pepper.jpg" alt="Boneles Lemon Pepper, imagen de referencia del menú" loading="lazy" decoding="async"><h3>Lemon Pepper</h3><p>10 piezas con el toque adecuado de limón y pimienta + 1 aderezo 20 oz.</p><div class="price">$100</div></article>
+    <article class="card food-card"><img class="food-img" src="assets/food/boneles-mango-habanero.jpg" alt="Boneles Mango Habanero, imagen de referencia del menú" loading="lazy" decoding="async"><h3>Mango Habanero</h3><p>10 piezas con salsa Mango-habanero + 1 aderezo 20 oz.</p><div class="price">$100</div></article>
+    <article class="card food-card"><img class="food-img" src="assets/food/boneles-buffalo.jpg" alt="Boneles Buffalo, imagen de referencia del menú" loading="lazy" decoding="async"><h3>Buffalo</h3><p>10 piezas bañadas con salsa Buffalo picosas + 1 aderezo 20 oz.</p><div class="price">$100</div></article>
+    <article class="card food-card"><img class="food-img" src="assets/food/boneles-kukul-specials.jpg" alt="Kukul Specials de boneles, imagen ilustrativa tomada del menú" loading="lazy" decoding="async"><h3>Kukul Specials</h3><p>10 piezas con queso manchego gratinado, un sabor diferente que debes probar + 1 aderezo 20 oz.</p><div class="price">$130</div></article>
   </div>
   <p style="color:#aaa;margin-top:14px"><b>Aderezos:</b> Ranch · Queso amarillo · Miel mostaza.</p>
 </section>
@@ -87,9 +93,9 @@ footer{background:#030303;border-top:1px solid #ffffff16;padding:35px 0 45px;tex
 <section class="container section" id="banderillas">
   <div class="section-head"><div class="eyebrow">🌭 Crujientes y deliciosas</div><h2>Banderillas <span>Coreanas</span></h2></div>
   <div class="grid">
-    <article class="card"><h3>Clásica</h3><p>Banderilla cubierta de PANKO.</p><div class="price">$70</div></article>
-    <article class="card"><h3>Flamin Hot</h3><p>Banderilla cubierta de Flamin Hot.</p><div class="price">$75</div></article>
-    <article class="card"><h3>Doritos Nachos</h3><p>Banderilla cubierta de Doritos Nachos.</p><div class="price">$75</div></article>
+    <article class="card food-card"><img class="food-img" src="assets/food/banderilla-clasica.jpg" alt="Banderilla clásica cubierta de PANKO" loading="lazy" decoding="async"><h3>Clásica</h3><p>Banderilla cubierta de PANKO.</p><div class="price">$70</div></article>
+    <article class="card food-card"><img class="food-img" src="assets/food/banderilla-flamin-hot.jpg" alt="Banderilla Flamin Hot" loading="lazy" decoding="async"><h3>Flamin Hot</h3><p>Banderilla cubierta de Flamin Hot.</p><div class="price">$75</div></article>
+    <article class="card food-card"><img class="food-img" src="assets/food/banderilla-doritos-nachos.jpg" alt="Banderilla Doritos Nachos" loading="lazy" decoding="async"><h3>Doritos Nachos</h3><p>Banderilla cubierta de Doritos Nachos.</p><div class="price">$75</div></article>
   </div>
   <div class="callout">
     <div><strong>Elige tu relleno</strong><small>Salchicha · Queso Mozzarella · Mixta (Salchicha y Queso)</small></div>
@@ -100,30 +106,33 @@ footer{background:#030303;border-top:1px solid #ffffff16;padding:35px 0 45px;tex
 <section class="container section" id="entradas">
   <div class="section-head"><div class="eyebrow">🍟 Para compartir</div><h2>Entradas</h2></div>
   <div class="grid">
-    <article class="card"><h3>Papas a la francesa</h3><p>300 gramos.</p><div class="price">$50</div></article>
-    <article class="card"><h3>Dedos de queso</h3><p>6 piezas.</p><div class="price">$50</div></article>
-    <article class="card"><h3>Dedos de queso con papas</h3><p>6 piezas con papas.</p><div class="price">$80</div></article>
-    <article class="card"><h3>Aros de cebolla</h3><p>10 piezas.</p><div class="price">$60</div></article>
-    <article class="card"><h3>Salchipulpos + Papas</h3><div class="price">$70</div></article>
+    <article class="card food-card"><img class="food-img" src="assets/food/papas.jpg" alt="Papas a la francesa, imagen del menú" loading="lazy" decoding="async"><h3>Papas a la francesa</h3><p>300 gramos.</p><div class="price">$50</div></article>
+    <article class="card food-card"><img class="food-img" src="assets/food/dedos-queso.jpg" alt="Dedos de queso, imagen del menú" loading="lazy" decoding="async"><h3>Dedos de queso</h3><p>6 piezas.</p><div class="price">$50</div></article>
+    <article class="card food-card"><img class="food-img" src="assets/food/dedos-queso-papas.jpg" alt="Dedos de queso con papas, imagen ilustrativa del menú" loading="lazy" decoding="async"><h3>Dedos de queso con papas</h3><p>6 piezas con papas.</p><div class="price">$80</div></article>
+    <article class="card food-card"><img class="food-img" src="assets/food/aros-cebolla.jpg" alt="Aros de cebolla, imagen del menú" loading="lazy" decoding="async"><h3>Aros de cebolla</h3><p>10 piezas.</p><div class="price">$60</div></article>
+    <article class="card food-card"><img class="food-img" src="assets/food/salchipulpos-papas.jpg" alt="Papas, imagen ilustrativa tomada del menú para Salchipulpos + Papas" loading="lazy" decoding="async"><h3>Salchipulpos + Papas</h3><div class="price">$70</div></article>
   </div>
 </section>
 
 <section class="container section" id="combos">
   <div class="section-head"><div class="eyebrow">🔥 Para disfrutar más</div><h2>Ricos <span>Combos</span></h2></div>
   <div class="grid">
-    <article class="card combo">
+    <article class="card combo food-card">
+      <img class="food-img" src="assets/food/combo-kukul-wings.jpg" alt="Combo Kukul Wings, imagen del menú" loading="lazy" decoding="async">
       <span class="tag">20 Alitas</span>
       <h3>Kukul Wings</h3>
       <p>20 alitas + 1 orden de aros de cebolla + 1 orden de dedos de queso + 1 orden de papas Gratis.</p>
       <div class="price">$300</div>
     </article>
-    <article class="card combo">
+    <article class="card combo food-card">
+      <img class="food-img" src="assets/food/combo-kaax-ki.jpg" alt="Combo Kaax Ki, imagen ilustrativa tomada del menú" loading="lazy" decoding="async">
       <span class="tag">20 Boneles</span>
       <h3>Kaax Ki´ (Pollo Rico)</h3>
       <p>20 Boneles + 1 orden de aros de cebolla + 1 orden de dedos de queso + 1 orden de papas Gratis.</p>
       <div class="price">$360</div>
     </article>
-    <article class="card combo">
+    <article class="card combo food-card">
+      <img class="food-img" src="assets/food/combo-mini-banderillas.jpg" alt="Combo Mini Banderillas, imagen ilustrativa tomada del menú" loading="lazy" decoding="async">
       <span class="tag">Mini</span>
       <h3>Combo Mini Banderillas</h3>
       <p>4 mini banderillas mixtas.</p>
