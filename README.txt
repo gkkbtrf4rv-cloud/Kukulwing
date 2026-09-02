@@ -1,11 +1,16 @@
-KUKUL WINGS - MENÚ DIGITAL
+KUKUL WINGS — MENÚ DIGITAL
+=============================
 
 Archivos:
-- index.html : página web
-- menu.pdf   : menú original
+- index.html
+- menu.pdf
+- assets/logo.jpg
+- assets/favicon.jpg
 
-PUBLICACIÓN GRATUITA:
-Puedes subir esta carpeta a un servicio de hosting estático. No cambies el nombre de index.html ni menu.pdf.
+La página es estática: no necesita base de datos ni servidor especial.
+Para publicarla, sube TODO el contenido de esta carpeta a un hosting de páginas estáticas.
 
 IMPORTANTE:
-El contenido de la página se transcribió del PDF proporcionado. Si un precio o descripción del PDF aparece repetido/ambiguo, conserva el PDF como referencia original.
+- Conserva la estructura: index.html + menu.pdf + carpeta assets.
+- El botón de WhatsApp usa el número 56-13-04-95-71.
+- Si cambia el número, dirección o precios, edita index.html.
