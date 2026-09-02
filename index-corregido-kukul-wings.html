@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090909">
+<meta name="description" content="Kukul Wings — Alitas, boneles, banderillas coreanas, entradas y combos.">
+<link rel="icon" href="assets/favicon.jpg">
+<title>Kukul Wings | Menú</title>
+<style>
+:root{--bg:#070707;--panel:#101010;--panel2:#171717;--gold:#ffca19;--red:#e21b23;--orange:#ff6a00;--cream:#fff7e7;--text:#fff;--muted:#bdbdbd;--line:#3a3a3a}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 50% -10%,#3b1005 0,#0b0b0b 34%,#050505 70%);color:var(--text);font-family:Arial,Helvetica,sans-serif;line-height:1.45}
+a{color:inherit}.container{width:min(1180px,92%);margin:auto}
+header{position:sticky;top:0;z-index:50;background:#080808ee;border-bottom:1px solid #ffffff18;backdrop-filter:blur(12px)}
+.nav{min-height:70px;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{display:flex;align-items:center;gap:12px;text-decoration:none;font-weight:1000;letter-spacing:.8px}.brand img{width:48px;height:48px;object-fit:cover;border-radius:50%;border:2px solid var(--gold)}.brand span{font-size:1.15rem}.brand b{color:var(--gold)}
+.navlinks{display:flex;gap:6px;overflow:auto}.navlinks a{padding:10px 13px;text-decoration:none;text-transform:uppercase;font-weight:900;font-size:.78rem;white-space:nowrap;border-radius:6px}.navlinks a:hover{background:var(--red)}
+.hero{min-height:calc(100vh - 70px);display:grid;grid-template-columns:1fr 1.05fr;align-items:center;gap:30px;padding:42px 0 55px;position:relative;overflow:hidden}.hero:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 85% 45%,#ff6a0024,transparent 38%);pointer-events:none}
+.kicker{display:inline-block;color:var(--gold);font-weight:1000;text-transform:uppercase;letter-spacing:2px;font-size:.9rem;border-left:4px solid var(--red);padding-left:10px}.hero h1{font-size:clamp(3.3rem,8vw,7rem);line-height:.82;margin:17px 0;text-transform:uppercase;font-weight:1000;letter-spacing:-5px;text-shadow:5px 6px 0 #000}.hero h1 span{display:block;color:var(--gold)}.hero h2{margin:0;color:var(--red);font-size:clamp(1.2rem,3vw,2rem);font-weight:1000}.hero p{font-size:clamp(1rem,2vw,1.25rem);font-weight:800;max-width:540px}.hero p strong{color:var(--gold)}
+.buttons{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:14px 20px;border-radius:8px;text-decoration:none;font-weight:1000;text-transform:uppercase;border:1px solid transparent;transition:.2s;cursor:pointer}.btn.red{background:var(--red);box-shadow:0 7px 20px #e21b2340}.btn.gold{border-color:var(--gold);color:var(--gold);background:#0008}.btn:hover{transform:translateY(-2px);filter:brightness(1.1)}
+.hero-logo{display:flex;justify-content:center;align-items:center}.hero-logo img{width:min(620px,100%);max-height:650px;object-fit:contain;filter:drop-shadow(0 20px 35px #000)}
+.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:-8px auto 50px}.quick .q{background:linear-gradient(135deg,#161616,#0b0b0b);border:1px solid #ffffff15;border-radius:12px;padding:18px;text-align:center}.q b{display:block;color:var(--gold);font-size:1.05rem}.q span{font-size:.82rem;color:#bbb}
+.section{padding:55px 0}.section-head{text-align:center;margin-bottom:25px}.section-head .eyebrow{color:var(--gold);font-weight:1000;text-transform:uppercase;letter-spacing:2px}.section-head h2{font-size:clamp(2rem,5vw,3.2rem);margin:6px 0 0;text-transform:uppercase;font-weight:1000}.section-head h2 span{color:var(--red)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.card{background:linear-gradient(145deg,#191919,#0c0c0c);border:1px solid #ffffff16;border-radius:14px;padding:19px;position:relative;overflow:hidden}.card:after{content:"";position:absolute;top:0;right:0;width:55px;height:4px;background:var(--red)}.card h3{margin:0 0 8px;font-size:1.08rem;text-transform:uppercase}.card p{margin:0;color:#bdbdbd;font-size:.9rem;min-height:38px}.price{margin-top:13px;color:var(--gold);font-size:1.4rem;font-weight:1000}.tag{display:inline-block;margin-bottom:8px;background:var(--red);font-size:.68rem;padding:4px 7px;border-radius:4px;font-weight:900}
+.combo{border-color:#7a4d00;background:linear-gradient(145deg,#2a1800,#111)}.combo .price{color:#ffca19}
+.callout{margin-top:20px;background:linear-gradient(90deg,#f5ad00,#ffd329);color:#080808;border-radius:12px;padding:19px;display:flex;justify-content:space-between;gap:15px;align-items:center}.callout strong{font-size:1.15rem}.callout small{display:block;margin-top:3px;font-weight:700}.callout .phone{font-size:clamp(1.4rem,4vw,2.2rem);font-weight:1000;white-space:nowrap}
+.info{display:grid;grid-template-columns:1fr 1fr;gap:16px}.info .box{background:#101010;border:1px solid #ffffff14;border-radius:14px;padding:23px}.box h3{margin-top:0;color:var(--gold)}.box p{color:#c8c8c8}.box strong{color:#fff}.address{font-size:1.05rem}
+.notice{background:#f2ad00;color:#080808;border-radius:12px;padding:15px 18px;font-weight:800;margin-bottom:20px}.notice b{font-weight:1000}
+footer{background:#030303;border-top:1px solid #ffffff16;padding:35px 0 45px;text-align:center}.footer-logo{width:90px;height:90px;border-radius:50%;object-fit:cover;border:2px solid var(--gold)}footer h3{margin:10px 0 3px;font-size:1.6rem}footer p{color:#aaa;margin:0}.social{margin-top:16px;display:flex;justify-content:center;gap:9px;flex-wrap:wrap}.social span{border:1px solid #ffffff22;padding:8px 12px;border-radius:999px;font-weight:800;font-size:.85rem}
+.float{position:fixed;right:18px;bottom:18px;z-index:60;background:#20c65a;color:#fff;text-decoration:none;font-weight:1000;padding:13px 17px;border-radius:999px;box-shadow:0 8px 30px #0009}
+@media(max-width:850px){.hero{grid-template-columns:1fr;text-align:center;padding-top:28px}.hero p{margin-left:auto;margin-right:auto}.kicker{border-left:0;border-bottom:3px solid var(--red);padding:0 0 5px}.hero-logo{order:-1}.hero-logo img{max-height:430px}.grid{grid-template-columns:repeat(2,1fr)}.info{grid-template-columns:1fr}.callout{align-items:flex-start;flex-direction:column}.navlinks{max-width:55vw}.quick{grid-template-columns:1fr}}
+@media(max-width:520px){.nav{min-height:62px}.brand img{width:42px;height:42px}.brand span{font-size:1rem}.navlinks a{font-size:.68rem;padding:8px}.hero h1{font-size:3.8rem;letter-spacing:-3px}.hero-logo img{max-height:330px}.grid{grid-template-columns:1fr}.section{padding:42px 0}.card{padding:16px}.float{right:12px;bottom:12px}.callout .phone{white-space:normal}}
+</style>
+</head>
+<body>
+<header>
+  <div class="container nav">
+    <a class="brand" href="#"><img src="assets/logo.jpg" alt="Kukul Wings"><span>KUKUL <b>WINGS</b></span></a>
+    <nav class="navlinks">
+      <a href="#alitas">Alitas</a><a href="#boneles">Boneles</a><a href="#banderillas">Banderillas</a><a href="#entradas">Entradas</a><a href="#combos">Combos</a><a href="#contacto">Contacto</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<section class="container hero">
+  <div>
+    <div class="kicker">KAAX KI’ · POLLO RICO</div>
+    <h1>Kukul <span>Wings</span></h1>
+    <h2>¡POLLO CON SABOR QUE TE HACE VOLVER!</h2>
+    <p>Todo se cocina de <strong>0 a 100%</strong>. Disfruta nuestras alitas, boneles, banderillas y combos.</p>
+    <div class="buttons"><a class="btn red" href="https://wa.me/525613049571" target="_blank" rel="noopener">💬 Haz tu pedido</a><a class="btn gold" href="menu.pdf" target="_blank">📄 Ver menú PDF</a></div>
+  </div>
+  <div class="hero-logo"><img src="assets/logo.jpg" alt="Logo Kukul Wings"></div>
+</section>
+
+<div class="container quick">
+  <div class="q"><b>25 MIN.</b><span>Tiempo aproximado de espera</span></div>
+  <div class="q"><b>0 A 100%</b><span>Todo se cocina de cero</span></div>
+  <div class="q"><b>100%</b><span>Sabor y calidad</span></div>
+</div>
+
+<section class="container section" id="alitas">
+  <div class="section-head"><div class="eyebrow">🍗 Crujientes y deliciosas</div><h2>Alitas</h2></div>
+  <div class="notice"><b>Importante:</b> Todos nuestros productos se cocinan de 0 a 100%, con una duración de espera de 25 min. Gracias por su comprensión.</div>
+  <div class="grid">
+    <article class="card"><h3>Salsa BBQ</h3><p>10 piezas + 1 aderezo 20 oz.</p><div class="price">$100</div></article>
+    <article class="card"><h3>Lemon Pepper</h3><p>10 piezas con el toque adecuado de limón y pimienta + 1 aderezo 20 oz.</p><div class="price">$100</div></article>
+    <article class="card"><h3>Mango Habanero</h3><p>10 piezas con salsa Mango-habanero + 1 aderezo 20 oz.</p><div class="price">$100</div></article>
+    <article class="card"><h3>Buffalo</h3><p>10 piezas bañadas con salsa Buffalo picosas + 1 aderezo 20 oz.</p><div class="price">$100</div></article>
+    <article class="card"><h3>Kukul Specials</h3><p>10 piezas con queso manchego gratinado, un sabor diferente que debes probar + 1 aderezo 20 oz.</p><div class="price">$130</div></article>
+  </div>
+  <p style="color:#aaa;margin-top:14px"><b>Aderezos:</b> Ranch · Queso amarillo · Miel mostaza.</p>
+</section>
+
+<section class="container section" id="boneles">
+  <div class="section-head"><div class="eyebrow">🔥 Todo el sabor, sin hueso</div><h2>Boneles</h2></div>
+  <div class="grid">
+    <article class="card"><h3>Salsa BBQ</h3><p>10 piezas + 1 aderezo 20 oz.</p><div class="price">$100</div></article>
+    <article class="card"><h3>Lemon Pepper</h3><p>10 piezas con el toque adecuado de limón y pimienta + 1 aderezo 20 oz.</p><div class="price">$100</div></article>
+    <article class="card"><h3>Mango Habanero</h3><p>10 piezas con salsa Mango-habanero + 1 aderezo 20 oz.</p><div class="price">$100</div></article>
+    <article class="card"><h3>Buffalo</h3><p>10 piezas bañadas con salsa Buffalo picosas + 1 aderezo 20 oz.</p><div class="price">$100</div></article>
+    <article class="card"><h3>Kukul Specials</h3><p>10 piezas con queso manchego gratinado, un sabor diferente que debes probar + 1 aderezo 20 oz.</p><div class="price">$130</div></article>
+  </div>
+  <p style="color:#aaa;margin-top:14px"><b>Aderezos:</b> Ranch · Queso amarillo · Miel mostaza.</p>
+</section>
+
+<section class="container section" id="banderillas">
+  <div class="section-head"><div class="eyebrow">🌭 Crujientes y deliciosas</div><h2>Banderillas <span>Coreanas</span></h2></div>
+  <div class="grid">
+    <article class="card"><h3>Salchicha</h3><div class="price">$70</div></article>
+    <article class="card"><h3>Queso Mozzarella</h3><div class="price">$75</div></article>
+    <article class="card"><h3>Mixta (salchicha y queso)</h3><div class="price">$75</div></article>
+    <article class="card"><h3>Queso Amarillo</h3><div class="price">$60</div></article>
+    <article class="card"><h3>Clásica</h3><div class="price">$50</div></article>
+    <article class="card"><h3>Flamin Hot</h3><div class="price">$50</div></article>
+    <article class="card"><h3>Doritos Nacho</h3><div class="price">$50</div></article>
+    <article class="card"><h3>Panko</h3><div class="price">$80</div></article>
+  </div>
+  <div class="callout"><div><strong>Elige tu relleno y tus aderezos</strong><small>Catsup · BBQ · Mango Habanero</small></div><div class="phone">🌶️</div></div>
+</section>
+
+<section class="container section" id="entradas">
+  <div class="section-head"><div class="eyebrow">🍟 Para compartir</div><h2>Entradas</h2></div>
+  <div class="grid">
+    <article class="card"><h3>Dedos de queso</h3><p>6 piezas.</p><div class="price">$75</div></article>
+    <article class="card"><h3>Papas a la francesa</h3><p>300 gr.</p><div class="price">$75</div></article>
+    <article class="card"><h3>Aros de cebolla</h3><p>10 piezas.</p><div class="price">$75</div></article>
+    <article class="card"><h3>Salchipulpos + Papas</h3><div class="price">$70</div></article>
+  </div>
+</section>
+
+<section class="container section" id="combos">
+  <div class="section-head"><div class="eyebrow">🔥 Para disfrutar más</div><h2>Ricas <span>Combos</span></h2></div>
+  <div class="grid">
+    <article class="card combo"><span class="tag">Favorito</span><h3>Combo Mini Banderillas</h3><p>4 Mini-Banderillas Mixtas.</p><div class="price">$75</div></article>
+    <article class="card combo"><h3>Dedos de queso + papas*</h3><p>Dedos de queso, 6 piezas c/papas.</p></article>
+    <article class="card combo"><span class="tag">20 piezas</span><h3>Combo 20 Alitas</h3><p>20 alitas + 1 orden de aros de cebolla + 1 orden de dedos de queso + 1 orden de papas gratis.</p><div class="price">$360</div></article>
+    <article class="card combo"><span class="tag">20 piezas</span><h3>Combo 20 Boneles</h3><p>20 boneles + 1 orden de aros de cebolla + 1 orden de dedos de queso + 1 orden de papas gratis.</p><div class="price">$300</div></article>
+  </div>
+</section>
+
+<section class="container section" id="contacto">
+  <div class="section-head"><div class="eyebrow">📍 Estamos para servirte</div><h2>Pedidos & <span>Contacto</span></h2></div>
+  <div class="info">
+    <div class="box">
+      <h3>📞 Haz tu pedido</h3>
+      <p class="address"><strong>56-13-04-95-71</strong></p>
+      <div class="buttons"><a class="btn red" href="https://wa.me/525613049571" target="_blank" rel="noopener">WhatsApp</a><a class="btn gold" href="tel:+525613049571">Llamar</a></div>
+      <p>Tiempo de espera aproximado: <strong>25 min.</strong></p>
+    </div>
+    <div class="box">
+      <h3>📍 Ubicación</h3>
+      <p class="address">Calle Venturina #24, Col. La Joya Ixtacala, C.P. 54160, Tlalnepantla.</p>
+      <p>Se aceptan <strong>transferencias bancarias</strong>.</p>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="container">
+    <img class="footer-logo" src="assets/logo.jpg" alt="Kukul Wings">
+    <h3>KUKUL WINGS</h3>
+    <p>KAAX KI’ · POLLO RICO</p>
+    <div class="social"><span>Facebook · KUKUL WINGS</span><span>Instagram · KUKUL WINGS</span><span>TikTok · KUKUL WINGS</span></div>
+    <p style="margin-top:18px;font-size:.85rem">Las imágenes son de carácter ilustrativo · Gracias por su preferencia ❤️</p>
+  </div>
+</footer>
+<a class="float" href="https://wa.me/525613049571" target="_blank" rel="noopener">💬 PEDIR AHORA</a>
+</body>
+</html>
