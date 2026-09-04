@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#090909">
 <meta name="description" content="Kukul Wings — Alitas, boneles, banderillas coreanas, entradas y combos.">
-<link rel="icon" href="assets/favicon.jpg">
+<link rel="icon" href="assets/kukul-logo-dragon.png">
 <title>Kukul Wings | Menú</title>
 <style>
 :root{--bg:#070707;--panel:#101010;--panel2:#171717;--gold:#ffca19;--red:#e21b23;--orange:#ff6a00;--cream:#fff7e7;--text:#fff;--muted:#bdbdbd;--line:#3a3a3a}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 50% -10%,#3b1005 0,#0b0b0b 34%,#050505 70%);color:var(--text);font-family:Arial,Helvetica,sans-serif;line-height:1.45}
 a{color:inherit}.container{width:min(1180px,92%);margin:auto}
 header{position:sticky;top:0;z-index:50;background:#080808ee;border-bottom:1px solid #ffffff18;backdrop-filter:blur(12px)}
-.nav{min-height:70px;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{display:flex;align-items:center;gap:12px;text-decoration:none;min-width:0}.brand-badge{width:48px;height:48px;object-fit:cover;border-radius:50%;border:2px solid var(--gold);flex:0 0 auto}.brand-wordmark{display:block;width:178px;flex:0 1 auto;opacity:0;pointer-events:none}.brand.is-pinned .brand-wordmark{opacity:1}.brand-wordmark img{width:100%;height:auto;display:block}
+.nav{min-height:70px;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{display:flex;align-items:center;gap:12px;text-decoration:none;min-width:0}.brand-badge{width:48px;height:48px;object-fit:cover;border-radius:50%;border:2px solid var(--gold);background:#050505;flex:0 0 auto}.brand-wordmark{display:block;width:178px;flex:0 1 auto;opacity:0;pointer-events:none}.brand.is-pinned .brand-wordmark{opacity:1}.brand-wordmark img{width:100%;height:auto;display:block}
 .navlinks{display:flex;gap:6px;overflow:auto}.navlinks a{padding:10px 13px;text-decoration:none;text-transform:uppercase;font-weight:900;font-size:.78rem;white-space:nowrap;border-radius:6px}.navlinks a:hover{background:var(--red)}
 .hero{min-height:calc(100vh - 70px);display:grid;grid-template-columns:1fr 1.05fr;align-items:center;gap:30px;padding:42px 0 55px;position:relative;overflow:hidden}.hero:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 85% 45%,#ff6a0024,transparent 38%);pointer-events:none}
 .kicker{display:inline-block;color:var(--gold);font-weight:1000;text-transform:uppercase;letter-spacing:2px;font-size:.9rem;border-left:4px solid var(--red);padding-left:10px}.hero-wordmark{width:min(520px,100%);margin:0 0 14px;filter:drop-shadow(0 10px 20px #000)}.hero-wordmark img{width:100%;height:auto;display:block}.hero h2{margin:0;color:var(--red);font-size:clamp(1.2rem,3vw,2rem);font-weight:1000}.hero p{font-size:clamp(1rem,2vw,1.25rem);font-weight:800;max-width:540px}.hero p strong{color:var(--gold)}
@@ -25,7 +25,7 @@ header{position:sticky;top:0;z-index:50;background:#080808ee;border-bottom:1px s
 .callout{margin-top:20px;background:linear-gradient(90deg,#f5ad00,#ffd329);color:#080808;border-radius:12px;padding:19px;display:flex;justify-content:space-between;gap:15px;align-items:center}.callout strong{font-size:1.15rem}.callout small{display:block;margin-top:3px;font-weight:700}.callout .phone{font-size:clamp(1.4rem,4vw,2.2rem);font-weight:1000;white-space:nowrap}
 .info{display:grid;grid-template-columns:1fr 1fr;gap:16px}.info .box{background:#101010;border:1px solid #ffffff14;border-radius:14px;padding:23px}.box h3{margin-top:0;color:var(--gold)}.box p{color:#c8c8c8}.box strong{color:#fff}.address{font-size:1.05rem}
 .notice{background:#f2ad00;color:#080808;border-radius:12px;padding:15px 18px;font-weight:800;margin-bottom:20px}.notice b{font-weight:1000}
-footer{background:#030303;border-top:1px solid #ffffff16;padding:35px 0 45px;text-align:center}.footer-logo{width:90px;height:90px;border-radius:50%;object-fit:cover;border:2px solid var(--gold)}footer h3{margin:10px 0 3px;font-size:1.6rem}footer p{color:#aaa;margin:0}.social{margin-top:16px;display:flex;justify-content:center;gap:9px;flex-wrap:wrap}.social span{border:1px solid #ffffff22;padding:8px 12px;border-radius:999px;font-weight:800;font-size:.85rem}
+footer{background:#030303;border-top:1px solid #ffffff16;padding:35px 0 45px;text-align:center}.footer-logo{width:90px;height:90px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);background:#050505}footer h3{margin:10px 0 3px;font-size:1.6rem}footer p{color:#aaa;margin:0}.social{margin-top:16px;display:flex;justify-content:center;gap:9px;flex-wrap:wrap}.social span{border:1px solid #ffffff22;padding:8px 12px;border-radius:999px;font-weight:800;font-size:.85rem}
 .float{position:fixed;right:18px;bottom:18px;z-index:60;background:#20c65a;color:#fff;text-decoration:none;font-weight:1000;padding:13px 17px;border-radius:999px;box-shadow:0 8px 30px #0009}
 @media(max-width:850px){.hero{grid-template-columns:1fr;text-align:center;padding-top:28px}.hero p{margin-left:auto;margin-right:auto}.kicker{border-left:0;border-bottom:3px solid var(--red);padding:0 0 5px}.hero-logo{order:-1}.hero-logo img{max-height:430px}.grid{grid-template-columns:repeat(2,1fr)}.info{grid-template-columns:1fr}.callout{align-items:flex-start;flex-direction:column}.navlinks{max-width:55vw}.quick{grid-template-columns:1fr}}
 @media(max-width:520px){.nav{min-height:62px}.brand-badge{width:42px;height:42px}.brand-wordmark{width:142px}.navlinks a{font-size:.68rem;padding:8px}.hero-wordmark{width:min(320px,100%);margin-left:auto;margin-right:auto}.hero-logo img{max-height:330px}.grid{grid-template-columns:1fr}.section{padding:42px 0}.card{padding:16px}.float{right:12px;bottom:12px}.callout .phone{white-space:normal}}
@@ -172,7 +172,7 @@ header.scrolled{background:#080808f7;box-shadow:0 8px 24px #0007;border-bottom-c
 <header>
   <div class="container nav">
     <a class="brand" href="#" aria-label="Kukul Wings">
-      <img class="brand-badge" src="assets/logo.jpg" alt="Logo Kukul Wings">
+      <img class="brand-badge" src="assets/kukul-logo-dragon.png" alt="Logo Kukul Wings">
       <span class="brand-wordmark" aria-hidden="true"><img src="assets/kukul-wings-letras.png" alt=""></span>
     </a>
     <nav class="navlinks">
@@ -189,7 +189,7 @@ header.scrolled{background:#080808f7;box-shadow:0 8px 24px #0007;border-bottom-c
     <p>Todo se cocina de <strong>0 a 100%</strong>. Disfruta nuestras alitas, boneles, banderillas y combos.</p>
     <div class="buttons"><a class="btn red" href="https://wa.me/525613049571?text=%C2%A1%C2%A1Hola%20kukul%21%21%20Quiero%20realizar%20mi%20pedido.%20%F0%9F%90%89" target="_blank" rel="noopener">💬 Haz tu pedido</a><a class="btn gold" href="menu.pdf" target="_blank">📄 Ver menú PDF</a></div>
   </div>
-  <div class="hero-logo"><img src="assets/logo.jpg" alt="Logo Kukul Wings"></div>
+  <div class="hero-logo"><img src="assets/kukul-logo-dragon.png" alt="Logo Kukul Wings"></div>
 </section>
 
 <div class="container quick">
@@ -320,7 +320,7 @@ header.scrolled{background:#080808f7;box-shadow:0 8px 24px #0007;border-bottom-c
 
 <footer>
   <div class="container">
-    <img class="footer-logo" src="assets/logo.jpg" alt="Kukul Wings">
+    <img class="footer-logo" src="assets/kukul-logo-dragon.png" alt="Kukul Wings">
     <h3>KUKUL WINGS</h3>
     
     <div class="social">
