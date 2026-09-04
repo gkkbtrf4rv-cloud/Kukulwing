@@ -79,22 +79,20 @@ header{transition:box-shadow .2s ease,background .2s ease,border-color .2s ease}
 header.scrolled{background:#080808f7;box-shadow:0 8px 24px #0007;border-bottom-color:#ffffff28}
 
 
-/* El logotipo principal viaja hasta la barra y se reduce allí */
+/* El nombre se transforma de forma continua conforme avanza el scroll */
 .hero-wordmark.is-transfer-source{visibility:hidden}
 .wordmark-flyer{
   position:fixed;
   z-index:90;
   margin:0;
   pointer-events:none;
+  transform:translateZ(0);
   transform-origin:top left;
-  will-change:left,top,width,height,opacity;
-  transition:
-    left .42s cubic-bezier(.22,1,.36,1),
-    top .42s cubic-bezier(.22,1,.36,1),
-    width .42s cubic-bezier(.22,1,.36,1),
-    height .42s cubic-bezier(.22,1,.36,1),
-    opacity .16s ease;
+  will-change:left,top,width,height;
+  contain:layout paint;
+  display:none;
 }
+.wordmark-flyer.is-active{display:block}
 .wordmark-flyer img{width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 7px 12px #0008)}
 
 @keyframes heroCopyIn{
@@ -281,126 +279,94 @@ header.scrolled{background:#080808f7;box-shadow:0 8px 24px #0007;border-bottom-c
   const brandWordmark = document.querySelector('.brand-wordmark');
   const heroWordmark = document.querySelector('.hero-wordmark');
 
-  let pinned = false;
-  let transferring = false;
   let flyer = null;
-  let lastScrollY = window.scrollY;
+  let rafPending = false;
+
+  const clamp01 = (value) => Math.max(0, Math.min(1, value));
+  const easeInOutCubic = (t) =>
+    t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+  const ensureFlyer = () => {
+    if (flyer) return flyer;
+    flyer = document.createElement('div');
+    flyer.className = 'wordmark-flyer';
+    flyer.innerHTML = '<img src="assets/kukul-wings-letras.png" alt="">';
+    document.body.appendChild(flyer);
+    return flyer;
+  };
 
   const setPinnedInstant = (value) => {
-    pinned = value;
     if (brand) brand.classList.toggle('is-pinned', value);
     if (heroWordmark) heroWordmark.classList.toggle('is-transfer-source', value);
+    if (flyer) flyer.classList.remove('is-active');
   };
 
-  const makeFlyer = (fromRect) => {
-    const el = document.createElement('div');
-    el.className = 'wordmark-flyer';
-    el.innerHTML = '<img src="assets/kukul-wings-letras.png" alt="">';
-    Object.assign(el.style, {
-      left: `${fromRect.left}px`,
-      top: `${fromRect.top}px`,
-      width: `${fromRect.width}px`,
-      height: `${fromRect.height}px`,
-      opacity: '1'
-    });
-    document.body.appendChild(el);
-    return el;
-  };
+  const renderScrollWordmark = () => {
+    rafPending = false;
+    if (!header || !brand || !brandWordmark || !heroWordmark) return;
 
-  const flyWordmark = (toPinned) => {
-    if (!brand || !brandWordmark || !heroWordmark || transferring) return;
-
-    const sourceRect = heroWordmark.getBoundingClientRect();
-    const targetRect = brandWordmark.getBoundingClientRect();
-    if (!sourceRect.width || !targetRect.width) {
-      setPinnedInstant(toPinned);
-      return;
-    }
-
-    transferring = true;
-    const fromRect = toPinned ? sourceRect : targetRect;
-    const toRect = toPinned ? targetRect : sourceRect;
-
-    if (toPinned) {
-      heroWordmark.classList.add('is-transfer-source');
-      brand.classList.remove('is-pinned');
-    } else {
-      brand.classList.remove('is-pinned');
-      heroWordmark.classList.add('is-transfer-source');
-    }
-
-    flyer = makeFlyer(fromRect);
-
-    // Dos frames garantizan que el navegador pinte primero el tamaño inicial.
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      if (!flyer) return;
-      Object.assign(flyer.style, {
-        left: `${toRect.left}px`,
-        top: `${toRect.top}px`,
-        width: `${toRect.width}px`,
-        height: `${toRect.height}px`
-      });
-    }));
-
-    const finish = () => {
-      if (flyer) {
-        flyer.remove();
-        flyer = null;
-      }
-      pinned = toPinned;
-      brand.classList.toggle('is-pinned', toPinned);
-      heroWordmark.classList.toggle('is-transfer-source', toPinned);
-      transferring = false;
-    };
-
-    flyer.addEventListener('transitionend', finish, { once: true });
-    window.setTimeout(() => {
-      if (transferring) finish();
-    }, 560);
-  };
-
-  // El logo sube con el contenido. Al alcanzar el borde inferior de la barra,
-  // completa el trayecto reduciéndose hasta su posición final en el encabezado.
-  const updateHeader = () => {
-    if (!header || !heroWordmark || !brandWordmark) return;
     header.classList.toggle('scrolled', window.scrollY > 18);
-
-    const goingDown = window.scrollY >= lastScrollY;
-    lastScrollY = window.scrollY;
 
     const headerRect = header.getBoundingClientRect();
     const heroRect = heroWordmark.getBoundingClientRect();
-    const triggerDown = headerRect.bottom + 4;
-    const triggerUp = headerRect.bottom + 22;
+    const targetRect = brandWordmark.getBoundingClientRect();
+    if (!heroRect.width || !targetRect.width) return;
+
+    // Empieza a transformarse mientras todavía se desplaza con la página.
+    // No existe un salto: cada frame depende directamente de la posición del scroll.
+    const travel = Math.max(150, Math.min(230, window.innerHeight * 0.24));
+    const startTop = headerRect.bottom + travel;
+    const endTop = targetRect.top;
+    const rawProgress = clamp01((startTop - heroRect.top) / Math.max(1, startTop - endTop));
 
     if (reduceMotion) {
-      setPinnedInstant(heroRect.top <= triggerDown);
+      setPinnedInstant(rawProgress >= 1);
       return;
     }
 
-    if (!pinned && !transferring && goingDown && heroRect.top <= triggerDown) {
-      flyWordmark(true);
-    } else if (pinned && !transferring && !goingDown && heroRect.top > triggerUp) {
-      flyWordmark(false);
+    if (rawProgress <= 0.001) {
+      heroWordmark.classList.remove('is-transfer-source');
+      brand.classList.remove('is-pinned');
+      if (flyer) flyer.classList.remove('is-active');
+      return;
     }
+
+    if (rawProgress >= 0.999) {
+      heroWordmark.classList.add('is-transfer-source');
+      brand.classList.add('is-pinned');
+      if (flyer) flyer.classList.remove('is-active');
+      return;
+    }
+
+    const p = easeInOutCubic(rawProgress);
+    const el = ensureFlyer();
+
+    heroWordmark.classList.add('is-transfer-source');
+    brand.classList.remove('is-pinned');
+    el.classList.add('is-active');
+
+    const left = heroRect.left + (targetRect.left - heroRect.left) * p;
+    const top = heroRect.top + (targetRect.top - heroRect.top) * p;
+    const width = heroRect.width + (targetRect.width - heroRect.width) * p;
+    const height = heroRect.height + (targetRect.height - heroRect.height) * p;
+
+    Object.assign(el.style, {
+      left: `${left.toFixed(2)}px`,
+      top: `${top.toFixed(2)}px`,
+      width: `${width.toFixed(2)}px`,
+      height: `${height.toFixed(2)}px`
+    });
   };
 
-  // Estado correcto al cargar incluso si la página se abre a mitad del scroll.
-  if (header && heroWordmark) {
-    const initialHeroTop = heroWordmark.getBoundingClientRect().top;
-    const initialHeaderBottom = header.getBoundingClientRect().bottom;
-    setPinnedInstant(initialHeroTop <= initialHeaderBottom + 4);
-  }
-  updateHeader();
-  window.addEventListener('scroll', updateHeader, { passive: true });
-  window.addEventListener('resize', () => {
-    if (flyer) {
-      flyer.remove();
-      flyer = null;
-      transferring = false;
-    }
-    updateHeader();
-  }, { passive: true });
+  const scheduleScrollWordmark = () => {
+    if (rafPending) return;
+    rafPending = true;
+    requestAnimationFrame(renderScrollWordmark);
+  };
+
+  renderScrollWordmark();
+  window.addEventListener('scroll', scheduleScrollWordmark, { passive: true });
+  window.addEventListener('resize', scheduleScrollWordmark, { passive: true });
 
   if (reduceMotion) return;
 
