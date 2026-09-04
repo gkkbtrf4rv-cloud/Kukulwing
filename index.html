@@ -116,31 +116,35 @@ header.scrolled{background:#080808f7;box-shadow:0 8px 24px #0007;border-bottom-c
 
 /* Moto de envíos: entrada rápida con polvo al aparecer */
 .delivery-callout{position:relative;overflow:hidden}
-.delivery-scene{position:relative;width:155px;height:58px;flex:0 0 155px;align-self:center}
+.delivery-scene{position:relative;width:190px;height:64px;flex:0 0 190px;align-self:center}
 .delivery-home{position:absolute;right:3px;bottom:3px;font-size:2.45rem;line-height:1;filter:drop-shadow(0 3px 2px #0002)}
-.delivery-rider{position:absolute;left:16px;bottom:4px;width:92px;height:48px;transform:translate3d(-190px,0,0);will-change:transform}
-.delivery-moto{position:absolute;right:0;bottom:0;font-size:2.65rem;line-height:1;filter:drop-shadow(0 3px 2px #0002);transform-origin:55% 85%}
+.delivery-rider{position:absolute;left:20px;bottom:9px;width:104px;height:50px;transform:translate3d(-340px,0,0);will-change:transform}
+.delivery-moto{position:absolute;right:0;bottom:0;font-size:2.9rem;line-height:1;filter:drop-shadow(0 4px 3px #0003);transform-origin:55% 85%}
 .delivery-dust{position:absolute;left:0;bottom:8px;width:14px;height:14px;border-radius:50%;background:#6d4a16;opacity:0;filter:blur(.3px)}
 .delivery-dust.d1{left:5px;bottom:6px;width:15px;height:15px}
 .delivery-dust.d2{left:19px;bottom:13px;width:10px;height:10px}
 .delivery-dust.d3{left:30px;bottom:4px;width:8px;height:8px}
+.delivery-dust.d4{left:41px;bottom:10px;width:11px;height:11px}
+.delivery-dust.d5{left:52px;bottom:3px;width:7px;height:7px}
 
 @media (prefers-reduced-motion: no-preference){
   .delivery-callout.delivery-run .delivery-rider{
-    animation:deliveryRideIn .72s cubic-bezier(.16,.86,.24,1.08) both;
+    animation:deliveryRideIn 1.08s cubic-bezier(.14,.82,.22,1.04) both;
   }
   .delivery-callout.delivery-run .delivery-moto{
-    animation:deliverySuspension .16s .62s ease-in-out 3;
+    animation:deliverySuspension .18s .92s ease-in-out 3;
   }
-  .delivery-callout.delivery-run .delivery-dust.d1{animation:deliveryDust .52s .12s ease-out both}
-  .delivery-callout.delivery-run .delivery-dust.d2{animation:deliveryDust .48s .2s ease-out both}
-  .delivery-callout.delivery-run .delivery-dust.d3{animation:deliveryDust .42s .28s ease-out both}
+  .delivery-callout.delivery-run .delivery-dust.d1{animation:deliveryDust .78s .12s ease-out both}
+  .delivery-callout.delivery-run .delivery-dust.d2{animation:deliveryDust .72s .24s ease-out both}
+  .delivery-callout.delivery-run .delivery-dust.d3{animation:deliveryDust .66s .36s ease-out both}
+  .delivery-callout.delivery-run .delivery-dust.d4{animation:deliveryDust .60s .48s ease-out both}
+  .delivery-callout.delivery-run .delivery-dust.d5{animation:deliveryDust .54s .58s ease-out both}
 }
 
 @keyframes deliveryRideIn{
-  0%{transform:translate3d(-190px,0,0) rotate(-2deg)}
-  62%{transform:translate3d(10px,-1px,0) rotate(1deg)}
-  82%{transform:translate3d(-5px,0,0) rotate(-1deg)}
+  0%{transform:translate3d(-340px,0,0) rotate(-3deg)}
+  70%{transform:translate3d(14px,-2px,0) rotate(1.5deg)}
+  86%{transform:translate3d(-6px,0,0) rotate(-1deg)}
   100%{transform:translate3d(0,0,0) rotate(0)}
 }
 @keyframes deliverySuspension{
@@ -149,15 +153,15 @@ header.scrolled{background:#080808f7;box-shadow:0 8px 24px #0007;border-bottom-c
 }
 @keyframes deliveryDust{
   0%{opacity:0;transform:translate3d(15px,0,0) scale(.25)}
-  24%{opacity:.5}
-  100%{opacity:0;transform:translate3d(-32px,-15px,0) scale(2.25)}
+  20%{opacity:.68}
+  100%{opacity:0;transform:translate3d(-52px,-20px,0) scale(2.75)}
 }
 
 @media(max-width:850px){
-  .delivery-scene{align-self:flex-end;width:145px;height:54px;flex-basis:54px}
+  .delivery-scene{align-self:flex-end;width:170px;height:58px;flex-basis:58px}
 }
 @media(max-width:520px){
-  .delivery-scene{width:132px;height:50px}
+  .delivery-scene{width:150px;height:54px}
   .delivery-home{font-size:2.15rem}
   .delivery-moto{font-size:2.35rem}
 }
@@ -285,6 +289,8 @@ header.scrolled{background:#080808f7;box-shadow:0 8px 24px #0007;border-bottom-c
         <span class="delivery-dust d1"></span>
         <span class="delivery-dust d2"></span>
         <span class="delivery-dust d3"></span>
+        <span class="delivery-dust d4"></span>
+        <span class="delivery-dust d5"></span>
         <span class="delivery-moto">🛵</span>
       </div>
       <span class="delivery-home">🏠</span>
@@ -443,7 +449,7 @@ header.scrolled{background:#080808f7;box-shadow:0 8px 24px #0007;border-bottom-c
             obs.unobserve(entry.target);
           }
         });
-      }, { threshold: 0.32, rootMargin: '0px 0px -8% 0px' });
+      }, { threshold: 0.08, rootMargin: '0px 0px 24% 0px' });
       deliveryObserver.observe(deliveryCallout);
     } else {
       deliveryCallout.classList.add('delivery-run');
