@@ -113,6 +113,59 @@ header.scrolled{background:#080808f7;box-shadow:0 8px 24px #0007;border-bottom-c
   .reveal{opacity:1!important;transform:none!important;filter:none!important}
 }
 
+
+/* Moto de envíos: entrada rápida con polvo al aparecer */
+.delivery-callout{position:relative;overflow:hidden}
+.delivery-scene{position:relative;width:155px;height:58px;flex:0 0 155px;align-self:center}
+.delivery-home{position:absolute;right:3px;bottom:3px;font-size:2.45rem;line-height:1;filter:drop-shadow(0 3px 2px #0002)}
+.delivery-rider{position:absolute;left:16px;bottom:4px;width:92px;height:48px;transform:translate3d(-190px,0,0);will-change:transform}
+.delivery-moto{position:absolute;right:0;bottom:0;font-size:2.65rem;line-height:1;filter:drop-shadow(0 3px 2px #0002);transform-origin:55% 85%}
+.delivery-dust{position:absolute;left:0;bottom:8px;width:14px;height:14px;border-radius:50%;background:#6d4a16;opacity:0;filter:blur(.3px)}
+.delivery-dust.d1{left:5px;bottom:6px;width:15px;height:15px}
+.delivery-dust.d2{left:19px;bottom:13px;width:10px;height:10px}
+.delivery-dust.d3{left:30px;bottom:4px;width:8px;height:8px}
+
+@media (prefers-reduced-motion: no-preference){
+  .delivery-callout.delivery-run .delivery-rider{
+    animation:deliveryRideIn .72s cubic-bezier(.16,.86,.24,1.08) both;
+  }
+  .delivery-callout.delivery-run .delivery-moto{
+    animation:deliverySuspension .16s .62s ease-in-out 3;
+  }
+  .delivery-callout.delivery-run .delivery-dust.d1{animation:deliveryDust .52s .12s ease-out both}
+  .delivery-callout.delivery-run .delivery-dust.d2{animation:deliveryDust .48s .2s ease-out both}
+  .delivery-callout.delivery-run .delivery-dust.d3{animation:deliveryDust .42s .28s ease-out both}
+}
+
+@keyframes deliveryRideIn{
+  0%{transform:translate3d(-190px,0,0) rotate(-2deg)}
+  62%{transform:translate3d(10px,-1px,0) rotate(1deg)}
+  82%{transform:translate3d(-5px,0,0) rotate(-1deg)}
+  100%{transform:translate3d(0,0,0) rotate(0)}
+}
+@keyframes deliverySuspension{
+  0%,100%{transform:translateY(0) rotate(0)}
+  50%{transform:translateY(-3px) rotate(-2deg)}
+}
+@keyframes deliveryDust{
+  0%{opacity:0;transform:translate3d(15px,0,0) scale(.25)}
+  24%{opacity:.5}
+  100%{opacity:0;transform:translate3d(-32px,-15px,0) scale(2.25)}
+}
+
+@media(max-width:850px){
+  .delivery-scene{align-self:flex-end;width:145px;height:54px;flex-basis:54px}
+}
+@media(max-width:520px){
+  .delivery-scene{width:132px;height:50px}
+  .delivery-home{font-size:2.15rem}
+  .delivery-moto{font-size:2.35rem}
+}
+@media (prefers-reduced-motion: reduce){
+  .delivery-rider{transform:none!important}
+  .delivery-dust{display:none!important}
+}
+
 </style>
 </head>
 <body>
@@ -222,12 +275,20 @@ header.scrolled{background:#080808f7;box-shadow:0 8px 24px #0007;border-bottom-c
 
 <section class="container section" id="contacto">
   <div class="section-head"><div class="eyebrow">📍 Estamos para servirte</div><h2>Pedidos & <span>Contacto</span></h2></div>
-  <div class="callout">
+  <div class="callout delivery-callout" id="delivery-callout">
     <div>
-      <strong>🛵 Envíos a domicilio</strong>
+      <strong>Envíos a domicilio</strong>
       <small>GRATIS en compras mínimas de $150 · En compras menores a $150 se cobrarán $10 de envío.</small>
     </div>
-    <div class="phone">🏠</div>
+    <div class="delivery-scene" aria-hidden="true">
+      <div class="delivery-rider">
+        <span class="delivery-dust d1"></span>
+        <span class="delivery-dust d2"></span>
+        <span class="delivery-dust d3"></span>
+        <span class="delivery-moto">🛵</span>
+      </div>
+      <span class="delivery-home">🏠</span>
+    </div>
   </div>
   <div class="info" style="margin-top:16px">
     <div class="box">
@@ -367,6 +428,27 @@ header.scrolled{background:#080808f7;box-shadow:0 8px 24px #0007;border-bottom-c
   renderScrollWordmark();
   window.addEventListener('scroll', scheduleScrollWordmark, { passive: true });
   window.addEventListener('resize', scheduleScrollWordmark, { passive: true });
+
+  const deliveryCallout = document.querySelector('#delivery-callout');
+  if (deliveryCallout) {
+    const rider = deliveryCallout.querySelector('.delivery-rider');
+
+    if (reduceMotion) {
+      if (rider) rider.style.transform = 'none';
+    } else if ('IntersectionObserver' in window) {
+      const deliveryObserver = new IntersectionObserver((entries, obs) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('delivery-run');
+            obs.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.32, rootMargin: '0px 0px -8% 0px' });
+      deliveryObserver.observe(deliveryCallout);
+    } else {
+      deliveryCallout.classList.add('delivery-run');
+    }
+  }
 
   if (reduceMotion) return;
 
