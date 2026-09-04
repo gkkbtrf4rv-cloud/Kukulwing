@@ -12,7 +12,7 @@
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 50% -10%,#3b1005 0,#0b0b0b 34%,#050505 70%);color:var(--text);font-family:Arial,Helvetica,sans-serif;line-height:1.45}
 a{color:inherit}.container{width:min(1180px,92%);margin:auto}
 header{position:sticky;top:0;z-index:50;background:#080808ee;border-bottom:1px solid #ffffff18;backdrop-filter:blur(12px)}
-.nav{min-height:70px;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{display:flex;align-items:center;gap:12px;text-decoration:none;min-width:0}.brand-badge{width:48px;height:48px;object-fit:cover;border-radius:50%;border:2px solid var(--gold);flex:0 0 auto}.brand-wordmark{display:block;width:178px;flex:0 1 auto;opacity:0;transform:translate3d(-10px,0,0) scale(.96);pointer-events:none;transition:opacity .22s ease,transform .3s cubic-bezier(.22,1,.36,1)}.brand.is-pinned .brand-wordmark{opacity:1;transform:translate3d(0,0,0) scale(1)}.brand-wordmark img{width:100%;height:auto;display:block}
+.nav{min-height:70px;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{display:flex;align-items:center;gap:12px;text-decoration:none;min-width:0}.brand-badge{width:48px;height:48px;object-fit:cover;border-radius:50%;border:2px solid var(--gold);flex:0 0 auto}.brand-wordmark{display:block;width:178px;flex:0 1 auto;opacity:0;pointer-events:none}.brand.is-pinned .brand-wordmark{opacity:1}.brand-wordmark img{width:100%;height:auto;display:block}
 .navlinks{display:flex;gap:6px;overflow:auto}.navlinks a{padding:10px 13px;text-decoration:none;text-transform:uppercase;font-weight:900;font-size:.78rem;white-space:nowrap;border-radius:6px}.navlinks a:hover{background:var(--red)}
 .hero{min-height:calc(100vh - 70px);display:grid;grid-template-columns:1fr 1.05fr;align-items:center;gap:30px;padding:42px 0 55px;position:relative;overflow:hidden}.hero:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 85% 45%,#ff6a0024,transparent 38%);pointer-events:none}
 .kicker{display:inline-block;color:var(--gold);font-weight:1000;text-transform:uppercase;letter-spacing:2px;font-size:.9rem;border-left:4px solid var(--red);padding-left:10px}.hero-wordmark{width:min(520px,100%);margin:0 0 14px;filter:drop-shadow(0 10px 20px #000)}.hero-wordmark img{width:100%;height:auto;display:block}.hero h2{margin:0;color:var(--red);font-size:clamp(1.2rem,3vw,2rem);font-weight:1000}.hero p{font-size:clamp(1rem,2vw,1.25rem);font-weight:800;max-width:540px}.hero p strong{color:var(--gold)}
@@ -77,6 +77,25 @@ footer{background:#030303;border-top:1px solid #ffffff16;padding:35px 0 45px;tex
 
 header{transition:box-shadow .2s ease,background .2s ease,border-color .2s ease}
 header.scrolled{background:#080808f7;box-shadow:0 8px 24px #0007;border-bottom-color:#ffffff28}
+
+
+/* El logotipo principal viaja hasta la barra y se reduce allí */
+.hero-wordmark.is-transfer-source{visibility:hidden}
+.wordmark-flyer{
+  position:fixed;
+  z-index:90;
+  margin:0;
+  pointer-events:none;
+  transform-origin:top left;
+  will-change:left,top,width,height,opacity;
+  transition:
+    left .42s cubic-bezier(.22,1,.36,1),
+    top .42s cubic-bezier(.22,1,.36,1),
+    width .42s cubic-bezier(.22,1,.36,1),
+    height .42s cubic-bezier(.22,1,.36,1),
+    opacity .16s ease;
+}
+.wordmark-flyer img{width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 7px 12px #0008)}
 
 @keyframes heroCopyIn{
   from{opacity:.66;transform:translate3d(-24px,10px,0)}
@@ -259,23 +278,129 @@ header.scrolled{background:#080808f7;box-shadow:0 8px 24px #0007;border-bottom-c
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const header = document.querySelector('header');
   const brand = document.querySelector('.brand');
+  const brandWordmark = document.querySelector('.brand-wordmark');
   const heroWordmark = document.querySelector('.hero-wordmark');
 
-  // El nombre de la barra aparece justo cuando el nombre grande alcanza el encabezado.
+  let pinned = false;
+  let transferring = false;
+  let flyer = null;
+  let lastScrollY = window.scrollY;
+
+  const setPinnedInstant = (value) => {
+    pinned = value;
+    if (brand) brand.classList.toggle('is-pinned', value);
+    if (heroWordmark) heroWordmark.classList.toggle('is-transfer-source', value);
+  };
+
+  const makeFlyer = (fromRect) => {
+    const el = document.createElement('div');
+    el.className = 'wordmark-flyer';
+    el.innerHTML = '<img src="assets/kukul-wings-letras.png" alt="">';
+    Object.assign(el.style, {
+      left: `${fromRect.left}px`,
+      top: `${fromRect.top}px`,
+      width: `${fromRect.width}px`,
+      height: `${fromRect.height}px`,
+      opacity: '1'
+    });
+    document.body.appendChild(el);
+    return el;
+  };
+
+  const flyWordmark = (toPinned) => {
+    if (!brand || !brandWordmark || !heroWordmark || transferring) return;
+
+    const sourceRect = heroWordmark.getBoundingClientRect();
+    const targetRect = brandWordmark.getBoundingClientRect();
+    if (!sourceRect.width || !targetRect.width) {
+      setPinnedInstant(toPinned);
+      return;
+    }
+
+    transferring = true;
+    const fromRect = toPinned ? sourceRect : targetRect;
+    const toRect = toPinned ? targetRect : sourceRect;
+
+    if (toPinned) {
+      heroWordmark.classList.add('is-transfer-source');
+      brand.classList.remove('is-pinned');
+    } else {
+      brand.classList.remove('is-pinned');
+      heroWordmark.classList.add('is-transfer-source');
+    }
+
+    flyer = makeFlyer(fromRect);
+
+    // Dos frames garantizan que el navegador pinte primero el tamaño inicial.
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      if (!flyer) return;
+      Object.assign(flyer.style, {
+        left: `${toRect.left}px`,
+        top: `${toRect.top}px`,
+        width: `${toRect.width}px`,
+        height: `${toRect.height}px`
+      });
+    }));
+
+    const finish = () => {
+      if (flyer) {
+        flyer.remove();
+        flyer = null;
+      }
+      pinned = toPinned;
+      brand.classList.toggle('is-pinned', toPinned);
+      heroWordmark.classList.toggle('is-transfer-source', toPinned);
+      transferring = false;
+    };
+
+    flyer.addEventListener('transitionend', finish, { once: true });
+    window.setTimeout(() => {
+      if (transferring) finish();
+    }, 560);
+  };
+
+  // El logo sube con el contenido. Al alcanzar el borde inferior de la barra,
+  // completa el trayecto reduciéndose hasta su posición final en el encabezado.
   const updateHeader = () => {
-    if (!header) return;
+    if (!header || !heroWordmark || !brandWordmark) return;
     header.classList.toggle('scrolled', window.scrollY > 18);
 
-    if (brand && heroWordmark) {
-      const headerHeight = header.getBoundingClientRect().height;
-      const wordmarkTop = heroWordmark.getBoundingClientRect().top;
-      brand.classList.toggle('is-pinned', wordmarkTop <= headerHeight + 2);
+    const goingDown = window.scrollY >= lastScrollY;
+    lastScrollY = window.scrollY;
+
+    const headerRect = header.getBoundingClientRect();
+    const heroRect = heroWordmark.getBoundingClientRect();
+    const triggerDown = headerRect.bottom + 4;
+    const triggerUp = headerRect.bottom + 22;
+
+    if (reduceMotion) {
+      setPinnedInstant(heroRect.top <= triggerDown);
+      return;
+    }
+
+    if (!pinned && !transferring && goingDown && heroRect.top <= triggerDown) {
+      flyWordmark(true);
+    } else if (pinned && !transferring && !goingDown && heroRect.top > triggerUp) {
+      flyWordmark(false);
     }
   };
 
+  // Estado correcto al cargar incluso si la página se abre a mitad del scroll.
+  if (header && heroWordmark) {
+    const initialHeroTop = heroWordmark.getBoundingClientRect().top;
+    const initialHeaderBottom = header.getBoundingClientRect().bottom;
+    setPinnedInstant(initialHeroTop <= initialHeaderBottom + 4);
+  }
   updateHeader();
   window.addEventListener('scroll', updateHeader, { passive: true });
-  window.addEventListener('resize', updateHeader, { passive: true });
+  window.addEventListener('resize', () => {
+    if (flyer) {
+      flyer.remove();
+      flyer = null;
+      transferring = false;
+    }
+    updateHeader();
+  }, { passive: true });
 
   if (reduceMotion) return;
 
@@ -299,7 +424,6 @@ header.scrolled{background:#080808f7;box-shadow:0 8px 24px #0007;border-bottom-c
     });
   });
 
-  // Desfase muy corto: se nota que aparecen uno por uno sin parecer una carga lenta.
   document.querySelectorAll('.grid').forEach((grid) => {
     [...grid.querySelectorAll(':scope > .card')].forEach((card, index) => {
       card.style.setProperty('--reveal-delay', `${Math.min(index * 35, 70)}ms`);
