@@ -170,6 +170,119 @@ header.scrolled{background:#080808f7;box-shadow:0 8px 24px #0007;border-bottom-c
   .delivery-dust{display:none!important}
 }
 
+
+
+/* ===== Carrito y selector de productos ===== */
+.card .add-product{
+  width:calc(100% - 14px);margin:14px 7px 0;padding:11px 14px;border:0;border-radius:9px;
+  background:var(--red);color:#fff;font:900 .82rem Arial,Helvetica,sans-serif;text-transform:uppercase;
+  cursor:pointer;transition:transform .18s ease,filter .18s ease,box-shadow .18s ease;
+  box-shadow:0 6px 18px #e21b2330;
+}
+.card .add-product:hover{transform:translateY(-2px);filter:brightness(1.08)}
+.card .add-product:active{transform:translateY(0) scale(.98)}
+.cart-float{
+  border:0;font:900 .9rem Arial,Helvetica,sans-serif;display:flex;align-items:center;gap:8px;
+  background:linear-gradient(135deg,#e21b23,#ad1016);cursor:pointer;
+}
+.cart-count{
+  min-width:24px;height:24px;padding:0 7px;border-radius:999px;background:var(--gold);color:#080808;
+  display:inline-flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:1000;
+}
+.cart-count.bump{animation:cartBump .28s ease}
+@keyframes cartBump{50%{transform:scale(1.28)}}
+
+.cart-overlay,.product-overlay{
+  position:fixed;inset:0;background:#000b;backdrop-filter:blur(5px);opacity:0;visibility:hidden;
+  transition:opacity .2s ease,visibility .2s ease;z-index:110;
+}
+.cart-overlay.is-open,.product-overlay.is-open{opacity:1;visibility:visible}
+.product-modal{
+  position:fixed;left:50%;top:50%;transform:translate(-50%,-46%) scale(.97);z-index:121;
+  width:min(520px,92%);max-height:min(82vh,720px);overflow:auto;background:#111;border:1px solid #ffffff20;
+  border-radius:18px;padding:22px;box-shadow:0 25px 80px #000d;opacity:0;visibility:hidden;
+  transition:opacity .2s ease,transform .25s cubic-bezier(.22,1,.36,1),visibility .2s ease;
+}
+.product-modal.is-open{opacity:1;visibility:visible;transform:translate(-50%,-50%) scale(1)}
+.modal-top,.cart-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.modal-top h3,.cart-head h3{margin:0;color:var(--gold);text-transform:uppercase;font-size:1.25rem}
+.icon-btn{width:42px;height:42px;border-radius:50%;border:1px solid #ffffff24;background:#191919;color:#fff;cursor:pointer;font-size:1.25rem;flex:0 0 auto}
+.product-modal .modal-price{font-weight:1000;font-size:1.3rem;color:var(--gold);margin:4px 0 14px}
+.option-group{margin:16px 0}
+.option-group label.group-label{display:block;font-weight:900;margin-bottom:7px;color:#fff}
+.option-group select,.option-group input[type="number"],.option-group textarea{
+  width:100%;border:1px solid #ffffff25;background:#090909;color:#fff;border-radius:10px;padding:12px 13px;
+  font:inherit;outline:none;
+}
+.option-group select:focus,.option-group input:focus,.option-group textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px #ffca1920}
+.option-group textarea{min-height:72px;resize:vertical}
+.check-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.check-option{display:flex;align-items:center;gap:8px;background:#0a0a0a;border:1px solid #ffffff18;border-radius:9px;padding:10px;cursor:pointer}
+.check-option input{accent-color:var(--red)}
+.qty-row{display:flex;align-items:center;gap:10px}
+.qty-row input{max-width:100px;text-align:center}
+.modal-actions{display:flex;gap:10px;margin-top:20px}
+.modal-actions .btn{flex:1;border:0}
+.form-error{min-height:20px;color:#ff777c;font-size:.86rem;font-weight:800;margin-top:6px}
+
+.cart-drawer{
+  position:fixed;top:0;right:0;height:100%;width:min(440px,94%);background:#0b0b0b;z-index:120;
+  border-left:1px solid #ffffff20;box-shadow:-20px 0 55px #000b;transform:translateX(105%);
+  transition:transform .32s cubic-bezier(.22,1,.36,1);display:flex;flex-direction:column;
+}
+.cart-drawer.is-open{transform:translateX(0)}
+.cart-head{padding:20px;border-bottom:1px solid #ffffff18;align-items:center}
+.cart-head small{display:block;color:#aaa;margin-top:3px}
+.cart-body{padding:14px 18px 20px;overflow:auto;flex:1}
+.cart-empty{text-align:center;padding:48px 15px;color:#aaa}
+.cart-empty .cart-empty-icon{font-size:3rem;display:block;margin-bottom:10px}
+.cart-item{padding:14px 0;border-bottom:1px solid #ffffff14}
+.cart-item-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.cart-item h4{margin:0 0 4px;font-size:.96rem;text-transform:uppercase}
+.cart-item-price{color:var(--gold);font-weight:1000;white-space:nowrap}
+.cart-mods{font-size:.8rem;color:#aaa;margin-top:5px;line-height:1.45}
+.cart-item-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
+.qty-controls{display:inline-flex;align-items:center;border:1px solid #ffffff20;border-radius:999px;overflow:hidden}
+.qty-controls button{width:34px;height:32px;border:0;background:#171717;color:#fff;font-size:1.1rem;cursor:pointer}
+.qty-controls span{min-width:34px;text-align:center;font-weight:900}
+.remove-item{border:0;background:transparent;color:#ff777c;font-weight:800;cursor:pointer;padding:7px}
+.cart-options{padding:14px 0;border-bottom:1px solid #ffffff18}
+.cart-options strong{display:block;margin-bottom:8px}
+.delivery-choice{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.delivery-choice label{border:1px solid #ffffff20;border-radius:10px;padding:10px;cursor:pointer;font-size:.88rem;font-weight:800;background:#111}
+.delivery-choice input{accent-color:var(--red);margin-right:6px}
+.delivery-address{margin-top:12px;padding:12px;border:1px solid #ffffff18;border-radius:10px;background:#0b0b0b}
+.delivery-address[hidden]{display:none!important}
+.delivery-address label{display:block;font-size:.84rem;font-weight:900;margin:0 0 6px;color:#f0f0f0}
+.delivery-address textarea,.delivery-address input{width:100%;background:#080808;color:#fff;border:1px solid #ffffff20;border-radius:9px;padding:10px;font:inherit;outline:none}
+.delivery-address textarea{min-height:78px;resize:vertical}
+.delivery-address input{margin-top:10px}
+.delivery-address textarea:focus,.delivery-address input:focus{border-color:var(--gold);box-shadow:0 0 0 2px #ffca1920}
+.delivery-address .address-help{display:block;color:#888;font-size:.74rem;margin-top:6px;line-height:1.35}
+.delivery-address .address-error{display:block;color:#ff777c;font-size:.78rem;font-weight:800;margin-top:6px;min-height:1.1em}
+.cart-note{margin-top:12px}
+.cart-note textarea{width:100%;min-height:62px;background:#080808;color:#fff;border:1px solid #ffffff20;border-radius:9px;padding:10px;font:inherit;resize:vertical}
+.cart-summary{padding:16px 20px;border-top:1px solid #ffffff18;background:#080808}
+.summary-line{display:flex;justify-content:space-between;gap:12px;margin:4px 0;color:#bbb}
+.summary-line.total{font-size:1.2rem;color:#fff;font-weight:1000;margin-top:10px;padding-top:10px;border-top:1px dashed #ffffff20}
+.summary-line.total strong{color:var(--gold)}
+.send-order{width:100%;margin-top:14px;border:0;background:#20c65a;color:#fff;padding:14px 16px;border-radius:10px;text-decoration:none;font-weight:1000;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:8px}
+.send-order[aria-disabled="true"]{opacity:.42;pointer-events:none}
+.cart-hint{font-size:.76rem;color:#888;text-align:center;margin:8px 0 0}
+body.cart-lock{overflow:hidden}
+.toast{
+  position:fixed;left:50%;bottom:88px;transform:translate(-50%,14px);z-index:140;background:#171717;color:#fff;
+  border:1px solid #ffffff24;border-radius:999px;padding:10px 16px;font-weight:900;opacity:0;pointer-events:none;
+  transition:opacity .2s ease,transform .2s ease;box-shadow:0 10px 35px #000a;
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:520px){
+  .check-grid{grid-template-columns:1fr}.product-modal{padding:18px}.cart-float{right:12px;bottom:12px}
+  .float.cart-float{padding:12px 14px}.float.cart-float .cart-label{display:none}
+  .delivery-choice{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){.product-modal,.cart-drawer,.cart-overlay,.product-overlay,.toast{transition:none!important}.cart-count.bump{animation:none!important}}
+
 </style>
 </head>
 <body>
@@ -191,7 +304,7 @@ header.scrolled{background:#080808f7;box-shadow:0 8px 24px #0007;border-bottom-c
     <div class="hero-wordmark" aria-label="Kukul Wings"><img src="assets/kukul-wings-letras.png" alt="Kukul Wings"></div>
     <h2>¡POLLO CON SABOR QUE TE HACE VOLVER!</h2>
     <p>Todo se cocina de <strong>0 a 100%</strong>. Disfruta nuestras alitas, boneles, banderillas y combos.</p>
-    <div class="buttons"><a class="btn red" href="https://wa.me/525613049571?text=%C2%A1%C2%A1Hola%20kukul%21%21%20Quiero%20realizar%20mi%20pedido.%20%F0%9F%90%89" target="_blank" rel="noopener">💬 Haz tu pedido</a><a class="btn gold" href="menu.pdf" target="_blank">📄 Ver menú PDF</a></div>
+    <div class="buttons"><button type="button" class="btn red" data-open-cart>🛒 Armar pedido</button><a class="btn gold" href="menu.pdf" target="_blank">📄 Ver menú PDF</a></div>
   </div>
   <div class="hero-logo"><img src="assets/kukul-logo-dragon.png" alt="Logo Kukul Wings"></div>
 </section>
@@ -206,24 +319,24 @@ header.scrolled{background:#080808f7;box-shadow:0 8px 24px #0007;border-bottom-c
   <div class="section-head"><div class="eyebrow">🍗 Crujientes y deliciosas</div><h2>Alitas</h2></div>
   <div class="notice"><b>Importante:</b> Todos nuestros productos se cocinan de 0 a 100%, con una duración de espera de 25 min. Gracias por su comprensión.</div>
   <div class="grid">
-    <article class="card food-card"><img class="food-img" src="assets/food/alitas-bbq.jpg" alt="Alitas Salsa BBQ, imagen de referencia del menú" loading="lazy" decoding="async"><h3>Salsa BBQ</h3><p>10 piezas + 1 aderezo 20 oz.</p><div class="price">$100</div></article>
-    <article class="card food-card"><img class="food-img" src="assets/food/alitas-lemon-pepper.jpg" alt="Alitas Lemon Pepper, imagen de referencia del menú" loading="lazy" decoding="async"><h3>Lemon Pepper</h3><p>10 piezas con el toque adecuado de limón y pimienta + 1 aderezo 20 oz.</p><div class="price">$100</div></article>
-    <article class="card food-card"><img class="food-img" src="assets/food/alitas-mango-habanero.jpg" alt="Alitas Mango Habanero, imagen de referencia del menú" loading="lazy" decoding="async"><h3>Mango Habanero</h3><p>10 piezas con salsa Mango-habanero + 1 aderezo 20 oz.</p><div class="price">$100</div></article>
-    <article class="card food-card"><img class="food-img" src="assets/food/alitas-buffalo.jpg" alt="Alitas Buffalo, imagen de referencia del menú" loading="lazy" decoding="async"><h3>Buffalo</h3><p>10 piezas bañadas con salsa Buffalo picosas + 1 aderezo 20 oz.</p><div class="price">$100</div></article>
-    <article class="card food-card"><img class="food-img" src="assets/food/alitas-kukul-specials.jpg" alt="Kukul Specials, imagen ilustrativa tomada del menú" loading="lazy" decoding="async"><h3>Kukul Specials</h3><p>10 piezas de alitas con queso manchego gratinado, un sabor diferente que debes probar + 1 aderezo 20 oz.</p><div class="price">$130</div></article>
+    <article class="card food-card"><img class="food-img" src="assets/food/alitas-bbq.jpg" alt="Alitas Salsa BBQ, imagen de referencia del menú" loading="lazy" decoding="async"><h3>Salsa BBQ</h3><p>10 piezas</p><div class="price">$100</div></article>
+    <article class="card food-card"><img class="food-img" src="assets/food/alitas-lemon-pepper.jpg" alt="Alitas Lemon Pepper, imagen de referencia del menú" loading="lazy" decoding="async"><h3>Lemon Pepper</h3><p>10 piezas con el toque adecuado de limón y pimienta</p><div class="price">$100</div></article>
+    <article class="card food-card"><img class="food-img" src="assets/food/alitas-mango-habanero.jpg" alt="Alitas Mango Habanero, imagen de referencia del menú" loading="lazy" decoding="async"><h3>Mango Habanero</h3><p>10 piezas con salsa Mango-habanero</p><div class="price">$100</div></article>
+    <article class="card food-card"><img class="food-img" src="assets/food/alitas-buffalo.jpg" alt="Alitas Buffalo, imagen de referencia del menú" loading="lazy" decoding="async"><h3>Buffalo</h3><p>10 piezas bañadas con salsa Buffalo picosas</p><div class="price">$100</div></article>
+    <article class="card food-card"><img class="food-img" src="assets/food/alitas-kukul-specials.jpg" alt="Kukul Specials, imagen ilustrativa tomada del menú" loading="lazy" decoding="async"><h3>Kukul Specials</h3><p>10 piezas de alitas con queso manchego gratinado, un sabor diferente que debes probar</p><div class="price">$130</div></article>
   </div>
-  <p style="color:#aaa;margin-top:14px"><b>Aderezos:</b> Ranch · Queso amarillo · Miel mostaza.</p>
+  <p style="color:#aaa;margin-top:14px"><b>Nota:</b> Cada orden incluye 1 aderezo de 2 oz. a elegir: Ranch · Queso amarillo · Miel mostaza.</p>
 </section>
 
 <section class="container section" id="boneles">
   <div class="section-head"><div class="eyebrow">🔥 Todo el sabor, sin hueso</div><h2>Boneles</h2></div>
   <div class="grid">
-    <article class="card food-card"><img class="food-img" src="assets/food/boneles-bbq.jpg" alt="Boneles Salsa BBQ, imagen de referencia del menú" loading="lazy" decoding="async"><h3>Salsa BBQ</h3><p>10 piezas + 1 aderezo 20 oz.</p><div class="price">$130</div></article>
-    <article class="card food-card"><img class="food-img" src="assets/food/boneles-lemon-pepper.jpg" alt="Boneles Lemon Pepper, imagen de referencia del menú" loading="lazy" decoding="async"><h3>Lemon Pepper</h3><p>10 piezas con el toque adecuado de limón y pimienta + 1 aderezo 20 oz.</p><div class="price">$130</div></article>
-    <article class="card food-card"><img class="food-img" src="assets/food/boneles-mango-habanero.jpg" alt="Boneles Mango Habanero, imagen de referencia del menú" loading="lazy" decoding="async"><h3>Mango Habanero</h3><p>10 piezas con salsa Mango-habanero + 1 aderezo 20 oz.</p><div class="price">$130</div></article>
-    <article class="card food-card"><img class="food-img" src="assets/food/boneles-buffalo.jpg" alt="Boneles Buffalo, imagen de referencia del menú" loading="lazy" decoding="async"><h3>Buffalo</h3><p>10 piezas bañadas con salsa Buffalo picosas + 1 aderezo 20 oz.</p><div class="price">$130</div></article>
+    <article class="card food-card"><img class="food-img" src="assets/food/boneles-bbq.jpg" alt="Boneles Salsa BBQ, imagen de referencia del menú" loading="lazy" decoding="async"><h3>Salsa BBQ</h3><p>10 piezas</p><div class="price">$130</div></article>
+    <article class="card food-card"><img class="food-img" src="assets/food/boneles-lemon-pepper.jpg" alt="Boneles Lemon Pepper, imagen de referencia del menú" loading="lazy" decoding="async"><h3>Lemon Pepper</h3><p>10 piezas con el toque adecuado de limón y pimienta</p><div class="price">$130</div></article>
+    <article class="card food-card"><img class="food-img" src="assets/food/boneles-mango-habanero.jpg" alt="Boneles Mango Habanero, imagen de referencia del menú" loading="lazy" decoding="async"><h3>Mango Habanero</h3><p>10 piezas con salsa Mango-habanero</p><div class="price">$130</div></article>
+    <article class="card food-card"><img class="food-img" src="assets/food/boneles-buffalo.jpg" alt="Boneles Buffalo, imagen de referencia del menú" loading="lazy" decoding="async"><h3>Buffalo</h3><p>10 piezas bañadas con salsa Buffalo picosas</p><div class="price">$130</div></article>
   </div>
-  <p style="color:#aaa;margin-top:14px"><b>Aderezos:</b> Ranch · Queso amarillo · Miel mostaza.</p>
+  <p style="color:#aaa;margin-top:14px"><b>Nota:</b> Cada orden incluye 1 aderezo de 2 oz. a elegir: Ranch · Queso amarillo · Miel mostaza.</p>
 </section>
 
 <section class="container section" id="banderillas">
@@ -300,7 +413,7 @@ header.scrolled{background:#080808f7;box-shadow:0 8px 24px #0007;border-bottom-c
     <div class="box">
       <h3>📞 Haz tu pedido</h3>
       <p class="address"><strong>56-13-04-95-71</strong></p>
-      <div class="buttons"><a class="btn red" href="https://wa.me/525613049571?text=%C2%A1%C2%A1Hola%20kukul%21%21%20Quiero%20realizar%20mi%20pedido.%20%F0%9F%90%89" target="_blank" rel="noopener">WhatsApp</a><a class="btn gold" href="tel:+525613049571">Llamar</a></div>
+      <div class="buttons"><button type="button" class="btn red" data-open-cart>🛒 Ver carrito</button><a class="btn gold" href="tel:+525613049571">Llamar</a></div>
       <p>Tiempo de espera aproximado: <strong>25 min.</strong></p>
     </div>
     <div class="box">
@@ -337,7 +450,7 @@ header.scrolled{background:#080808f7;box-shadow:0 8px 24px #0007;border-bottom-c
     <p style="margin-top:18px;font-size:.85rem">Las imágenes son de carácter ilustrativo · Gracias por su preferencia ❤️</p>
   </div>
 </footer>
-<a class="float" href="https://wa.me/525613049571?text=%C2%A1%C2%A1Hola%20kukul%21%21%20Quiero%20realizar%20mi%20pedido.%20%F0%9F%90%89" target="_blank" rel="noopener">💬 PEDIR AHORA</a>
+<button type="button" class="float cart-float" data-open-cart aria-label="Abrir carrito"><span>🛒</span><span class="cart-label">Mi pedido</span><b class="cart-count" id="cartCount">0</b></button>
 <script>
 (() => {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -510,6 +623,431 @@ header.scrolled{background:#080808f7;box-shadow:0 8px 24px #0007;border-bottom-c
   });
 
   items.forEach((el) => observer.observe(el));
+})();
+</script>
+
+
+<div class="product-overlay" id="productOverlay"></div>
+<section class="product-modal" id="productModal" role="dialog" aria-modal="true" aria-labelledby="productModalTitle" aria-hidden="true">
+  <div class="modal-top">
+    <div>
+      <h3 id="productModalTitle">Agregar producto</h3>
+      <div class="modal-price" id="productModalPrice"></div>
+    </div>
+    <button type="button" class="icon-btn" id="closeProductModal" aria-label="Cerrar">×</button>
+  </div>
+  <form id="productForm">
+    <div id="productOptions"></div>
+    <div class="option-group">
+      <label class="group-label" for="productQty">Cantidad</label>
+      <div class="qty-row"><input id="productQty" name="quantity" type="number" min="1" max="20" step="1" value="1" inputmode="numeric"></div>
+    </div>
+    <div class="option-group">
+      <label class="group-label" for="itemNote">Indicaciones (opcional)</label>
+      <textarea id="itemNote" maxlength="160" placeholder="Ej. sin catsup, aderezo aparte..."></textarea>
+    </div>
+    <div class="form-error" id="productError" aria-live="polite"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn gold" id="cancelProduct">Cancelar</button>
+      <button type="submit" class="btn red">Agregar al pedido</button>
+    </div>
+  </form>
+</section>
+
+<div class="cart-overlay" id="cartOverlay"></div>
+<aside class="cart-drawer" id="cartDrawer" aria-hidden="true" aria-labelledby="cartTitle">
+  <div class="cart-head">
+    <div><h3 id="cartTitle">Tu pedido</h3><small id="cartSubtitle">0 productos</small></div>
+    <button type="button" class="icon-btn" id="closeCart" aria-label="Cerrar carrito">×</button>
+  </div>
+  <div class="cart-body">
+    <div id="cartItems"></div>
+    <div class="cart-options" id="cartOptions">
+      <strong>¿Cómo recibirás tu pedido?</strong>
+      <div class="delivery-choice">
+        <label><input type="radio" name="deliveryType" value="pickup" checked> Recoger en local</label>
+        <label><input type="radio" name="deliveryType" value="delivery"> Envío a domicilio</label>
+      </div>
+      <div class="delivery-address" id="deliveryAddressBox" hidden>
+        <label for="deliveryAddress">📍 Dirección de entrega *</label>
+        <textarea id="deliveryAddress" maxlength="260" autocomplete="street-address" placeholder="Calle, número, colonia, C.P. y municipio"></textarea>
+        <span class="address-help">Escribe la dirección lo más completa posible para poder localizarte.</span>
+        <label for="deliveryReference" style="margin-top:10px">Referencias de entrega (opcional)</label>
+        <input id="deliveryReference" maxlength="180" placeholder="Ej. portón negro, entre Calle A y Calle B">
+        <span class="address-error" id="deliveryAddressError" aria-live="polite"></span>
+      </div>
+      <div class="cart-note">
+        <textarea id="orderNote" maxlength="220" placeholder="Nota general del pedido (opcional)"></textarea>
+      </div>
+    </div>
+  </div>
+  <div class="cart-summary">
+    <div class="summary-line"><span>Subtotal</span><strong id="cartSubtotal">$0</strong></div>
+    <div class="summary-line" id="shippingRow"><span>Envío</span><strong id="cartShipping">—</strong></div>
+    <div class="summary-line total"><span>Total</span><strong id="cartTotal">$0</strong></div>
+    <a class="send-order" id="sendWhatsApp" href="#" target="_blank" rel="noopener" aria-disabled="true">💬 Confirmar por WhatsApp</a>
+    <p class="cart-hint">El mensaje se genera automáticamente con tu pedido.</p>
+  </div>
+</aside>
+<div class="toast" id="cartToast" role="status" aria-live="polite">Agregado al pedido ✓</div>
+
+
+<script>
+(() => {
+  const PHONE = '525613049571';
+  const GREETING = '¡¡Hola Kukul!! Quiero realizar el siguiente pedido. 🐉';
+  const wingFlavors = ['Salsa BBQ','Lemon Pepper','Mango Habanero','Buffalo'];
+  const dressings = ['Ranch','Queso amarillo','Miel mostaza'];
+  const banderillaFillings = ['Salchicha','Queso Mozzarella','Mixta (Salchicha y Queso)'];
+  const banderillaDressings = ['Queso amarillo','Catsup','BBQ','Mango habanero'];
+
+  const productModal = document.querySelector('#productModal');
+  const productOverlay = document.querySelector('#productOverlay');
+  const productForm = document.querySelector('#productForm');
+  const productOptions = document.querySelector('#productOptions');
+  const productQty = document.querySelector('#productQty');
+  const itemNote = document.querySelector('#itemNote');
+  const productError = document.querySelector('#productError');
+  const modalTitle = document.querySelector('#productModalTitle');
+  const modalPrice = document.querySelector('#productModalPrice');
+  const cartDrawer = document.querySelector('#cartDrawer');
+  const cartOverlay = document.querySelector('#cartOverlay');
+  const cartItems = document.querySelector('#cartItems');
+  const cartCount = document.querySelector('#cartCount');
+  const cartSubtitle = document.querySelector('#cartSubtitle');
+  const subtotalEl = document.querySelector('#cartSubtotal');
+  const shippingEl = document.querySelector('#cartShipping');
+  const totalEl = document.querySelector('#cartTotal');
+  const sendWhatsApp = document.querySelector('#sendWhatsApp');
+  const orderNote = document.querySelector('#orderNote');
+  const deliveryAddressBox = document.querySelector('#deliveryAddressBox');
+  const deliveryAddress = document.querySelector('#deliveryAddress');
+  const deliveryReference = document.querySelector('#deliveryReference');
+  const deliveryAddressError = document.querySelector('#deliveryAddressError');
+  const toast = document.querySelector('#cartToast');
+  let activeProduct = null;
+  let toastTimer = null;
+
+  const money = (n) => `$${Number(n || 0).toLocaleString('es-MX')}`;
+  const safeQty = (value) => Math.min(20, Math.max(1, parseInt(value, 10) || 1));
+  const slug = (s) => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+
+  let cart = [];
+  try { cart = JSON.parse(localStorage.getItem('kukulCartV1') || '[]'); if (!Array.isArray(cart)) cart = []; } catch { cart = []; }
+  try {
+    deliveryAddress.value = localStorage.getItem('kukulDeliveryAddress') || '';
+    deliveryReference.value = localStorage.getItem('kukulDeliveryReference') || '';
+  } catch {}
+
+  const saveCart = () => {
+    try { localStorage.setItem('kukulCartV1', JSON.stringify(cart)); } catch {}
+  };
+
+  const productFromCard = (card) => {
+    const section = card.closest('section[id]');
+    const category = section?.id || 'producto';
+    const name = card.querySelector('h3')?.textContent.trim() || 'Producto';
+    const priceText = card.querySelector('.price')?.textContent || '$0';
+    const price = Number(priceText.replace(/[^0-9.]/g,'')) || 0;
+    const description = card.querySelector('p')?.textContent.trim() || '';
+    let id = `${category}-${slug(name)}`;
+    if (category === 'alitas' && !/Kukul Specials/i.test(name)) id = 'alitas-regular';
+    if (category === 'boneles') id = 'boneles-regular';
+    return { id, category, name, price, description };
+  };
+
+  document.querySelectorAll('#alitas .card, #boneles .card, #banderillas .card, #entradas .card, #combos .card').forEach((card) => {
+    if (card.querySelector('.add-product')) return;
+    const product = productFromCard(card);
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'add-product';
+    button.textContent = '＋ Agregar';
+    button.setAttribute('aria-label', `Agregar ${product.name}`);
+    button.addEventListener('click', () => openProduct(product));
+    card.appendChild(button);
+  });
+
+  const selectField = (label, id, options, selected='') => `
+    <div class="option-group">
+      <label class="group-label" for="${id}">${label}</label>
+      <select id="${id}" name="${id}">
+        ${options.map(v => `<option value="${v.replace(/"/g,'&quot;')}" ${v===selected?'selected':''}>${v}</option>`).join('')}
+      </select>
+    </div>`;
+
+  const checkboxField = (label, id, options) => `
+    <div class="option-group" data-check-group="${id}">
+      <label class="group-label">${label}</label>
+      <div class="check-grid">
+        ${options.map((v,i) => `<label class="check-option"><input type="checkbox" name="${id}" value="${v.replace(/"/g,'&quot;')}" ${i===0?'checked':''}> <span>${v}</span></label>`).join('')}
+      </div>
+    </div>`;
+
+  const optionsForProduct = (p) => {
+    let html = '';
+    if (p.category === 'alitas') {
+      if (!/Kukul Specials/i.test(p.name)) html += selectField('Salsa / sabor','flavor',wingFlavors,p.name);
+      else html += '<div class="option-group"><label class="group-label">Sabor</label><div>Kukul Specials · queso manchego gratinado</div></div>';
+      html += selectField('Aderezo de 2 oz.','dressing',dressings,dressings[0]);
+    } else if (p.category === 'boneles') {
+      html += selectField('Salsa / sabor','flavor',wingFlavors,p.name);
+      html += selectField('Aderezo de 2 oz.','dressing',dressings,dressings[0]);
+    } else if (p.category === 'banderillas') {
+      html += selectField('Relleno','filling',banderillaFillings,banderillaFillings[0]);
+      html += checkboxField('Aderezos','bandDressings',banderillaDressings);
+    } else if (p.category === 'combos') {
+      if (/^Kukul Wings$/i.test(p.name)) {
+        html += selectField('Salsa para las alitas','flavor',wingFlavors,wingFlavors[0]);
+        html += selectField('Aderezo','dressing',dressings,dressings[0]);
+      } else if (/Kaax Ki/i.test(p.name)) {
+        html += selectField('Sabor para los boneless','flavor',wingFlavors,wingFlavors[0]);
+        html += selectField('Aderezo','dressing',dressings,dressings[0]);
+      } else if (/Mini Banderillas/i.test(p.name)) {
+        html += checkboxField('Aderezos','bandDressings',banderillaDressings);
+      }
+    }
+    return html;
+  };
+
+  function openProduct(product){
+    activeProduct = product;
+    modalTitle.textContent = product.category === 'alitas' && !/Kukul Specials/i.test(product.name) ? 'Alitas' :
+      product.category === 'boneles' ? 'Boneles' : product.name;
+    modalPrice.textContent = `${money(product.price)} c/u`;
+    productOptions.innerHTML = optionsForProduct(product);
+    productQty.value = 1;
+    itemNote.value = '';
+    productError.textContent = '';
+    productModal.classList.add('is-open');
+    productOverlay.classList.add('is-open');
+    productModal.setAttribute('aria-hidden','false');
+    syncBodyLock();
+    setTimeout(() => productModal.querySelector('select,input,textarea,button')?.focus(), 30);
+  }
+
+  function closeProduct(){
+    productModal.classList.remove('is-open');
+    productOverlay.classList.remove('is-open');
+    productModal.setAttribute('aria-hidden','true');
+    activeProduct = null;
+    syncBodyLock();
+  }
+
+  function readModifiers(){
+    const mods = {};
+    const flavor = productModal.querySelector('#flavor');
+    const dressing = productModal.querySelector('#dressing');
+    const filling = productModal.querySelector('#filling');
+    if (flavor) mods['Sabor'] = flavor.value;
+    if (dressing) mods['Aderezo'] = dressing.value;
+    if (filling) mods['Relleno'] = filling.value;
+    const band = [...productModal.querySelectorAll('input[name="bandDressings"]:checked')].map(x => x.value);
+    if (productModal.querySelector('input[name="bandDressings"]')) {
+      if (!band.length) throw new Error('Elige al menos un aderezo.');
+      mods['Aderezos'] = band.join(', ');
+    }
+    return mods;
+  }
+
+  function displayName(item){
+    if (item.category === 'alitas' && !/Kukul Specials/i.test(item.productName)) return 'Alitas';
+    if (item.category === 'boneles') return 'Boneles';
+    return item.productName;
+  }
+
+  productForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    if (!activeProduct) return;
+    try {
+      const modifiers = readModifiers();
+      const quantity = safeQty(productQty.value);
+      const note = itemNote.value.trim();
+      const keyData = { id:activeProduct.id, modifiers, note };
+      const key = JSON.stringify(keyData);
+      const existing = cart.find(x => x.key === key);
+      if (existing) existing.quantity = Math.min(99, existing.quantity + quantity);
+      else cart.push({
+        key,
+        productId: activeProduct.id,
+        category: activeProduct.category,
+        productName: activeProduct.name,
+        unitPrice: activeProduct.price,
+        quantity,
+        modifiers,
+        note
+      });
+      saveCart();
+      renderCart();
+      closeProduct();
+      showToast();
+    } catch (err) {
+      productError.textContent = err.message || 'Revisa tus opciones.';
+    }
+  });
+
+  function showToast(){
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 1500);
+  }
+
+  function openCart(){
+    renderCart();
+    cartDrawer.classList.add('is-open');
+    cartOverlay.classList.add('is-open');
+    cartDrawer.setAttribute('aria-hidden','false');
+    syncBodyLock();
+    setTimeout(() => document.querySelector('#closeCart')?.focus(), 30);
+  }
+  function closeCart(){
+    cartDrawer.classList.remove('is-open');
+    cartOverlay.classList.remove('is-open');
+    cartDrawer.setAttribute('aria-hidden','true');
+    syncBodyLock();
+  }
+  function syncBodyLock(){
+    document.body.classList.toggle('cart-lock', productModal.classList.contains('is-open') || cartDrawer.classList.contains('is-open'));
+  }
+
+  document.querySelectorAll('[data-open-cart]').forEach(btn => btn.addEventListener('click', openCart));
+  document.querySelector('#closeProductModal').addEventListener('click', closeProduct);
+  document.querySelector('#cancelProduct').addEventListener('click', closeProduct);
+  productOverlay.addEventListener('click', closeProduct);
+  document.querySelector('#closeCart').addEventListener('click', closeCart);
+  cartOverlay.addEventListener('click', closeCart);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    if (productModal.classList.contains('is-open')) closeProduct();
+    else if (cartDrawer.classList.contains('is-open')) closeCart();
+  });
+
+  function getDeliveryType(){
+    return document.querySelector('input[name="deliveryType"]:checked')?.value || 'pickup';
+  }
+
+  function syncDeliveryAddress(){
+    const isDelivery = getDeliveryType() === 'delivery';
+    deliveryAddressBox.hidden = !isDelivery;
+    if (!isDelivery) deliveryAddressError.textContent = '';
+  }
+
+  function totals(){
+    const subtotal = cart.reduce((sum,item) => sum + item.unitPrice * item.quantity, 0);
+    const delivery = getDeliveryType();
+    const shipping = delivery === 'delivery' ? (subtotal >= 150 ? 0 : 10) : 0;
+    return { subtotal, shipping, total: subtotal + shipping, delivery };
+  }
+
+  function buildWhatsAppMessage(){
+    const { subtotal, shipping, total, delivery } = totals();
+    const lines = [GREETING, '', '🧾 Pedido:'];
+    cart.forEach((item) => {
+      const lineTotal = item.unitPrice * item.quantity;
+      lines.push(`• ${item.quantity} x ${displayName(item)} — ${money(lineTotal)}`);
+      Object.entries(item.modifiers || {}).forEach(([k,v]) => lines.push(`   ${k}: ${v}`));
+      if (item.note) lines.push(`   Nota: ${item.note}`);
+    });
+    lines.push('', `Subtotal: ${money(subtotal)}`);
+    if (delivery === 'delivery') lines.push(`Envío: ${shipping === 0 ? 'Gratis' : money(shipping)}`);
+    lines.push(`Total: ${money(total)}`);
+    lines.push(`Entrega: ${delivery === 'delivery' ? 'Envío a domicilio' : 'Recoger en local'}`);
+    if (delivery === 'delivery') {
+      const address = deliveryAddress.value.trim();
+      const reference = deliveryReference.value.trim();
+      if (address) lines.push(`📍 Dirección: ${address}`);
+      if (reference) lines.push(`Referencias: ${reference}`);
+    }
+    const generalNote = orderNote.value.trim();
+    if (generalNote) lines.push(`Nota general: ${generalNote}`);
+    return lines.join('\n');
+  }
+
+  function updateWhatsAppLink(){
+    if (!cart.length) {
+      sendWhatsApp.href = '#';
+      sendWhatsApp.setAttribute('aria-disabled','true');
+      return;
+    }
+    sendWhatsApp.setAttribute('aria-disabled','false');
+    sendWhatsApp.href = `https://wa.me/${PHONE}?text=${encodeURIComponent(buildWhatsAppMessage())}`;
+  }
+
+  function renderCart(){
+    const count = cart.reduce((sum,item) => sum + item.quantity, 0);
+    cartCount.textContent = String(count);
+    cartSubtitle.textContent = `${count} ${count === 1 ? 'producto' : 'productos'}`;
+    cartCount.classList.remove('bump');
+    void cartCount.offsetWidth;
+    if (count) cartCount.classList.add('bump');
+
+    if (!cart.length) {
+      cartItems.innerHTML = '<div class="cart-empty"><span class="cart-empty-icon">🛒</span><strong>Tu pedido está vacío</strong><p>Agrega productos desde el menú.</p></div>';
+    } else {
+      cartItems.innerHTML = cart.map((item,index) => {
+        const mods = Object.entries(item.modifiers || {}).map(([k,v]) => `<div><b>${k}:</b> ${escapeHtml(v)}</div>`).join('');
+        const note = item.note ? `<div><b>Nota:</b> ${escapeHtml(item.note)}</div>` : '';
+        return `<article class="cart-item" data-index="${index}">
+          <div class="cart-item-top"><div><h4>${escapeHtml(displayName(item))}</h4><div class="cart-mods">${mods}${note}</div></div><div class="cart-item-price">${money(item.unitPrice * item.quantity)}</div></div>
+          <div class="cart-item-actions"><div class="qty-controls"><button type="button" data-cart-action="minus" aria-label="Quitar uno">−</button><span>${item.quantity}</span><button type="button" data-cart-action="plus" aria-label="Agregar uno">+</button></div><button type="button" class="remove-item" data-cart-action="remove">Eliminar</button></div>
+        </article>`;
+      }).join('');
+    }
+
+    const { subtotal, shipping, total, delivery } = totals();
+    subtotalEl.textContent = money(subtotal);
+    shippingEl.textContent = delivery === 'delivery' ? (shipping === 0 ? 'Gratis' : money(shipping)) : '—';
+    totalEl.textContent = money(total);
+    syncDeliveryAddress();
+    updateWhatsAppLink();
+  }
+
+  function escapeHtml(value){
+    return String(value).replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
+  }
+
+  cartItems.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-cart-action]');
+    if (!btn) return;
+    const itemEl = btn.closest('.cart-item');
+    const index = Number(itemEl?.dataset.index);
+    if (!Number.isInteger(index) || !cart[index]) return;
+    const action = btn.dataset.cartAction;
+    if (action === 'plus') cart[index].quantity = Math.min(99, cart[index].quantity + 1);
+    if (action === 'minus') cart[index].quantity = Math.max(1, cart[index].quantity - 1);
+    if (action === 'remove') cart.splice(index,1);
+    saveCart(); renderCart();
+  });
+
+  document.querySelectorAll('input[name="deliveryType"]').forEach(radio => radio.addEventListener('change', () => {
+    syncDeliveryAddress();
+    renderCart();
+  }));
+  orderNote.addEventListener('input', updateWhatsAppLink);
+  deliveryAddress.addEventListener('input', () => {
+    deliveryAddressError.textContent = '';
+    try { localStorage.setItem('kukulDeliveryAddress', deliveryAddress.value); } catch {}
+    updateWhatsAppLink();
+  });
+  deliveryReference.addEventListener('input', () => {
+    try { localStorage.setItem('kukulDeliveryReference', deliveryReference.value); } catch {}
+    updateWhatsAppLink();
+  });
+  sendWhatsApp.addEventListener('click', (e) => {
+    if (!cart.length) { e.preventDefault(); return; }
+    if (getDeliveryType() === 'delivery' && !deliveryAddress.value.trim()) {
+      e.preventDefault();
+      deliveryAddressError.textContent = 'Escribe la dirección de entrega para continuar.';
+      deliveryAddress.focus();
+      deliveryAddress.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    updateWhatsAppLink();
+  });
+
+  syncDeliveryAddress();
+  renderCart();
 })();
 </script>
 
