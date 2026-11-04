@@ -25,8 +25,7 @@ window.kukulReady=(async()=>{
   section.append(grid);if(c.note)section.append(el('p',c.note,'category-note'));contact.before(section);
   const link=el('a',c.name);link.href=`#${c.id}`;nav.append(link);
  }
- const firstCategory=categories.find(c=>products.some(p=>p.category===c.id&&p.available));
- if(firstCategory)document.querySelector('[data-menu-link]').href='#'+firstCategory.id;
+ document.querySelector('[data-menu-link]').href=content.menuPdf||'menu.pdf';
  const link=el('a','Contacto');link.href='#contacto';nav.append(link);
  const boxes=contact.querySelectorAll('.info .box');
  boxes[0].querySelector('.address strong').textContent='+'+b.phone;

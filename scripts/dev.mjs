@@ -6,7 +6,7 @@ import {randomBytes,scryptSync} from 'node:crypto';
 const root=resolve(fileURLToPath(new URL('../',import.meta.url)));
 export function createServer(){return http.createServer(async(req,res)=>{try{
  const url=new URL(req.url,'http://localhost');const path=decodeURIComponent(url.pathname);
- if(['/api/content','/api/session','/api/upload'].includes(path)){const {default:handler}=await import(new URL(`..${path}.js`,import.meta.url));return handler(req,res);}
+ if(['/api/content','/api/session','/api/upload','/api/menu-upload'].includes(path)){const {default:handler}=await import(new URL(`..${path}.js`,import.meta.url));return handler(req,res);}
  const mapped=path==='/admin'?'/admin.html':path==='/'?'/index.html':path;
  const rel=mapped.startsWith('/local-photos/')?'.local-data/photos/'+mapped.slice(14):mapped.slice(1);
  if(rel.split('/').some(part=>part==='..')||(!mapped.startsWith('/local-photos/')&&(/(^|\/)\./.test(rel)||/^(lib|scripts|tests|node_modules)\//.test(rel)))){res.writeHead(404);return res.end();}

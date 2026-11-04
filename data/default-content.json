@@ -271,5 +271,6 @@
       "available": true,
       "options": "mini-banderilla"
     }
-  ]
+  ],
+  "menuPdf": "menu.pdf"
 }

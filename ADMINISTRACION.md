@@ -1,6 +1,6 @@
 # Panel de Kukul Wings
 
-El panel vive en `/admin`. Permite crear, editar, ocultar y eliminar productos; organizar categorías; subir fotos; modificar precios, teléfono, WhatsApp, dirección, mapa, horarios y redes sociales. Los cambios se publican al pulsar **Guardar cambios**. El menú público y el carrito usan el mismo catálogo. El antiguo PDF se conserva como archivo pero deja de ser el enlace principal para evitar precios desactualizados.
+El panel vive en `/admin`. Permite crear, editar, ocultar y eliminar productos; organizar categorías; subir fotos; modificar precios, teléfono, WhatsApp, dirección, mapa, horarios y redes sociales. Los cambios se publican al pulsar **Guardar cambios**. El menú público y el carrito usan el mismo catálogo. La sección Menú PDF permite subir y reemplazar el archivo (máximo 3.3 MB) y conserva el original hasta guardar. El botón público abre la última versión guardada. Los precios del PDF deben actualizarse manualmente cuando cambien los productos.
 
 ## Activación en el proyecto Vercel existente
 

@@ -5,7 +5,7 @@ let content,revision,dirty=false,saving=false,uploads=0,editingProduct=null,edit
 const money=n=>new Intl.NumberFormat('es-MX',{style:'currency',currency:'MXN',maximumFractionDigits:2}).format(n);
 const uid=prefix=>`${prefix}-${crypto.randomUUID()}`;
 function notice(message,bad=false){const n=$('#notice');n.textContent=message;n.classList.toggle('error',bad);n.hidden=false;}
-function saveState(){ $('#save').disabled=!dirty||saving||uploads>0;$('#save').textContent=saving?'Guardando…':uploads?'Subiendo foto…':'Guardar cambios';$('#saveState').textContent=dirty?'Cambios sin guardar':'Sin cambios pendientes'; }
+function saveState(){ $('#save').disabled=!dirty||saving||uploads>0;$('#save').textContent=saving?'Guardando…':uploads?'Subiendo archivo…':'Guardar cambios';$('#saveState').textContent=dirty?'Cambios sin guardar':'Sin cambios pendientes'; }
 function changed(){dirty=true;saveState();}
 async function api(path,options={}){const r=await fetch(path,{credentials:'same-origin',cache:'no-store',...options,headers:{'Content-Type':'application/json',...options.headers}});let d;try{d=await r.json();}catch{throw new Error('No pudimos conectar con el servidor. Intenta de nuevo.');}if(!r.ok){if(r.status===401&&path!='/api/session'){ $('#app').hidden=true;$('#login').hidden=false;$('#loginStatus').textContent='Tu sesión terminó. Inicia sesión para conservar tus cambios pendientes.'; }throw new Error(d.error||'No se pudo completar la acción.');}return d;}
 function categoryOptions(select,all=false){const value=select.value;select.replaceChildren();if(all){const o=make('option','Todas las categorías');o.value='';select.append(o);}content.categories.forEach(c=>{const o=make('option',c.name);o.value=c.id;select.append(o);});if([...select.options].some(o=>o.value===value))select.value=value;}
@@ -19,7 +19,7 @@ function renderProducts(){
 function renderCategories(){const list=$('#categoryList');list.replaceChildren();content.categories.forEach((c,index)=>{
  const row=make('article',undefined,'category-row');const copy=make('div',undefined,'grow');const count=content.products.filter(p=>p.category===c.id).length;copy.append(make('h3',c.name),make('p',`${count} productos · ${c.eyebrow||'Sin subtítulo'}`));const actions=make('div',undefined,'row-actions');for(const [label,offset]of [['↑',-1],['↓',1]]){const b=button(label,()=>{const next=index+offset;[content.categories[index],content.categories[next]]=[content.categories[next],content.categories[index]];changed();renderAll();});b.setAttribute('aria-label',`${offset<0?'Subir':'Bajar'} ${c.name}`);b.disabled=index+offset<0||index+offset>=content.categories.length;actions.append(b);}actions.append(button('Editar',()=>editCategory(c.id)),button('Eliminar',()=>{if(count){notice('Mueve o elimina los productos de esta categoría antes de borrarla.',true);return;}if(!confirm(`¿Eliminar la categoría “${c.name}”?`))return;content.categories=content.categories.filter(x=>x.id!==c.id);changed();renderAll();},'danger'));row.append(copy,actions);list.append(row);
  });}
-function renderAll(){categoryOptions($('#filter'),true);renderProducts();renderCategories();renderPhotos();}
+function renderAll(){categoryOptions($('#filter'),true);renderProducts();renderCategories();renderPhotos();renderPdf();}
 function editCategory(id=null){editingCategory=id;const c=content.categories.find(c=>c.id===id)||{name:'',eyebrow:'',note:''};const f=$('#categoryForm');for(const k of ['name','eyebrow','note'])f.elements[k].value=c[k];$('#categoryTitle').textContent=id?'Editar categoría':'Nueva categoría';$('#categoryDialog').showModal();}
 $('#categoryForm').addEventListener('submit',e=>{e.preventDefault();const f=e.target;const values={name:f.elements.name.value.trim(),eyebrow:f.elements.eyebrow.value.trim(),note:f.elements.note.value.trim()};if(!values.name)return;const existing=content.categories.find(c=>c.id===editingCategory);if(existing)Object.assign(existing,values);else content.categories.push({id:uid('categoria'),...values});changed();renderAll();$('#categoryDialog').close();});
 function editProduct(id=null){if(!content.categories.length){notice('Agrega una categoría antes de crear productos.',true);return;}editingProduct=id;const p=content.products.find(p=>p.id===id)||{name:'',category:content.categories[0].id,description:'',price:'',image:'',tag:'',available:true,options:'none'};const f=$('#productForm');categoryOptions(f.elements.category);for(const k of ['name','category','description','price','tag','options'])f.elements[k].value=p[k];f.elements.available.checked=p.available;draftImage=p.image;$('#productPhoto').replaceChildren(photoEditor('Foto del producto',p.image,value=>{draftImage=value;}));$('#editorTitle').textContent=id?'Editar producto':'Nuevo producto';$('#productError').textContent='';$('#productDialog').showModal();}
@@ -41,7 +41,7 @@ $('#businessForm').addEventListener('submit',e=>e.preventDefault());
 $('#save').addEventListener('click',async()=>{
  if(saving||uploads)return;if(!$('#businessForm').checkValidity()){showTab('business');$('#businessForm').reportValidity();return;}saving=true;saveState();try{const result=await api('/api/content',{method:'PUT',body:JSON.stringify({content,revision})});content=result.content;revision=result.revision;dirty=false;notice('Cambios guardados. Tu sitio público ya muestra la nueva información.');renderAll();populateBusiness();}catch(e){notice(e.message,true);}finally{saving=false;saveState();}
 });
-function showTab(id){document.querySelectorAll('.tab').forEach(n=>n.hidden=n.id!==id);document.querySelectorAll('[data-tab]').forEach(n=>n.classList.toggle('active',n.dataset.tab===id));$('#pageTitle').textContent={products:'Productos',categories:'Categorías',photos:'Fotos del sitio',business:'Datos del negocio'}[id];}
+function showTab(id){document.querySelectorAll('.tab').forEach(n=>n.hidden=n.id!==id);document.querySelectorAll('[data-tab]').forEach(n=>n.classList.toggle('active',n.dataset.tab===id));$('#pageTitle').textContent={products:'Productos',categories:'Categorías',photos:'Fotos del sitio',business:'Datos del negocio',pdf:'Menú PDF'}[id];}
 for(const b of document.querySelectorAll('[data-tab]'))b.addEventListener('click',()=>showTab(b.dataset.tab));
 for(const b of document.querySelectorAll('[data-close]'))b.addEventListener('click',()=>{if(uploads){$('#productError').textContent='Espera a que termine la carga.';return;}b.closest('dialog').close();});
 $('#productDialog').addEventListener('cancel',e=>{if(uploads)e.preventDefault();});
@@ -51,3 +51,17 @@ $('#logout').addEventListener('click',async()=>{if(dirty&&!confirm('Tienes cambi
 async function openApp(){if(!content){const d=await api('/api/content');content=d.content;revision=d.revision;renderAll();populateBusiness();}$('#app').hidden=false;$('#login').hidden=true;saveState();}
 $('#loginForm').addEventListener('submit',async e=>{e.preventDefault();const b=e.target.querySelector('button');b.disabled=true;$('#loginStatus').textContent='Entrando…';try{await api('/api/session',{method:'POST',body:JSON.stringify({password:e.target.elements.password.value})});e.target.reset();await openApp();}catch(e){$('#loginStatus').textContent=e.message;}finally{b.disabled=false;}});
 (async()=>{try{const status=await api('/api/session');if(status.authenticated)await openApp();else{$('#login').hidden=false;if(!status.configured)$('#loginStatus').textContent='El panel está instalado. Falta configurar el acceso privado en Vercel.';}if(!status.storageConfigured)$('#loginStatus').textContent='Falta conectar el almacenamiento para guardar los cambios.';}catch(e){$('#login').hidden=false;$('#loginStatus').textContent=e.message;}})();
+
+function renderPdf(){ $('#currentPdf').href=content.menuPdf||'menu.pdf'; }
+$('#pdfFile').addEventListener('change',async e=>{
+ const file=e.target.files[0];if(!file)return;
+ const status=$('#pdfStatus');
+ if(file.size>3300000){status.textContent='El PDF debe pesar como máximo 3.3 MB.';e.target.value='';return;}
+ if(!/\.pdf$/i.test(file.name)){status.textContent='Selecciona un archivo PDF.';e.target.value='';return;}
+ uploads++;saveState();e.target.disabled=true;status.textContent='Subiendo PDF…';
+ try{
+  const data=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve('data:application/pdf;base64,'+String(reader.result).split(',')[1]);reader.onerror=()=>reject(new Error('No se pudo leer el archivo.'));reader.readAsDataURL(file);});
+  const {url}=await api('/api/menu-upload',{method:'POST',body:JSON.stringify({data})});
+  content.menuPdf=url;changed();renderPdf();status.textContent=`${file.name} listo. Pulsa “Guardar cambios” para publicarlo.`;
+ }catch(error){status.textContent=error.message;}finally{uploads--;e.target.disabled=false;e.target.value='';saveState();}
+});
