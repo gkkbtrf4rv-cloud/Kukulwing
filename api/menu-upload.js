@@ -4,5 +4,5 @@ import { parsePdf } from '../lib/validation.js';
 import { body, json, error } from '../lib/http.js';
 export default async function handler(req,res){try{
  if(req.method!=='POST'){res.setHeader('Allow','POST');return json(res,405,{error:'Método no permitido.'});}
- sameOrigin(req);requireAdmin(req);json(res,200,{url:await uploadPublicFile(parsePdf(await body(req,4410000)))});
+ sameOrigin(req);requireAdmin(req);json(res,200,{url:await uploadPublicFile(parsePdf(await body(req,4480000)))});
 }catch(e){error(res,e);}}

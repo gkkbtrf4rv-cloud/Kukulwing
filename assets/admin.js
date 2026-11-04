@@ -56,7 +56,7 @@ function renderPdf(){ $('#currentPdf').href=content.menuPdf||'menu.pdf'; }
 $('#pdfFile').addEventListener('change',async e=>{
  const file=e.target.files[0];if(!file)return;
  const status=$('#pdfStatus');
- if(file.size>3300000){status.textContent='El PDF debe pesar como máximo 3.3 MB.';e.target.value='';return;}
+ if(file.size>3350000){status.textContent='El PDF debe pesar como máximo 3.35 MB.';e.target.value='';return;}
  if(!/\.pdf$/i.test(file.name)){status.textContent='Selecciona un archivo PDF.';e.target.value='';return;}
  uploads++;saveState();e.target.disabled=true;status.textContent='Subiendo PDF…';
  try{
