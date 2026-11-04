@@ -1,0 +1,275 @@
+{
+  "version": 1,
+  "business": {
+    "whatsapp": "525613049571",
+    "phone": "525613049571",
+    "address": "Calle Venturina #24, Col. La Joya Ixtacala, C.P. 54160, Tlalnepantla.",
+    "mapQuery": "19.527113,-99.1778847",
+    "hours": "",
+    "waitMinutes": 25,
+    "facebook": "https://www.facebook.com/share/1BJG8KuHqX/",
+    "instagram": "https://www.instagram.com/kukulwings",
+    "tiktok": "https://www.tiktok.com/@kukulwings",
+    "deliveryFee": 10,
+    "freeDeliveryFrom": 150
+  },
+  "images": {
+    "logo": "assets/kukul-logo-dragon.png",
+    "wordmark": "assets/kukul-wings-letras.png",
+    "hero": "assets/kukul-logo-dragon.png"
+  },
+  "categories": [
+    {
+      "id": "alitas",
+      "name": "Alitas",
+      "eyebrow": "🍗 Crujientes y deliciosas",
+      "note": "Nota: Cada orden incluye 1 aderezo de 2 oz. a elegir: Ranch · Queso amarillo · Miel mostaza."
+    },
+    {
+      "id": "boneles",
+      "name": "Boneles",
+      "eyebrow": "🔥 Todo el sabor, sin hueso",
+      "note": "Nota: Cada orden incluye 1 aderezo de 2 oz. a elegir: Ranch · Queso amarillo · Miel mostaza."
+    },
+    {
+      "id": "banderillas",
+      "name": "Banderillas Coreanas",
+      "eyebrow": "🌭 Crujientes y deliciosas",
+      "note": ""
+    },
+    {
+      "id": "entradas",
+      "name": "Entradas",
+      "eyebrow": "🍟 Para compartir",
+      "note": ""
+    },
+    {
+      "id": "combos",
+      "name": "Ricos Combos",
+      "eyebrow": "🔥 Para disfrutar más",
+      "note": ""
+    }
+  ],
+  "products": [
+    {
+      "id": "alitas-1",
+      "category": "alitas",
+      "name": "Salsa BBQ",
+      "description": "10 piezas",
+      "price": 100.0,
+      "image": "assets/food/alitas-bbq.jpg",
+      "tag": "",
+      "available": true,
+      "options": "dressing"
+    },
+    {
+      "id": "alitas-2",
+      "category": "alitas",
+      "name": "Lemon Pepper",
+      "description": "10 piezas con el toque adecuado de limón y pimienta",
+      "price": 100.0,
+      "image": "assets/food/alitas-lemon-pepper.jpg",
+      "tag": "",
+      "available": true,
+      "options": "dressing"
+    },
+    {
+      "id": "alitas-3",
+      "category": "alitas",
+      "name": "Mango Habanero",
+      "description": "10 piezas con salsa Mango-habanero",
+      "price": 100.0,
+      "image": "assets/food/alitas-mango-habanero.jpg",
+      "tag": "",
+      "available": true,
+      "options": "dressing"
+    },
+    {
+      "id": "alitas-4",
+      "category": "alitas",
+      "name": "Buffalo",
+      "description": "10 piezas bañadas con salsa Buffalo picosas",
+      "price": 100.0,
+      "image": "assets/food/alitas-buffalo.jpg",
+      "tag": "",
+      "available": true,
+      "options": "dressing"
+    },
+    {
+      "id": "alitas-5",
+      "category": "alitas",
+      "name": "Kukul Specials",
+      "description": "10 piezas de alitas con queso manchego gratinado, un sabor diferente que debes probar",
+      "price": 130.0,
+      "image": "assets/food/alitas-kukul-specials.jpg",
+      "tag": "",
+      "available": true,
+      "options": "dressing"
+    },
+    {
+      "id": "boneles-1",
+      "category": "boneles",
+      "name": "Salsa BBQ",
+      "description": "10 piezas",
+      "price": 130.0,
+      "image": "assets/food/boneles-bbq.jpg",
+      "tag": "",
+      "available": true,
+      "options": "dressing"
+    },
+    {
+      "id": "boneles-2",
+      "category": "boneles",
+      "name": "Lemon Pepper",
+      "description": "10 piezas con el toque adecuado de limón y pimienta",
+      "price": 130.0,
+      "image": "assets/food/boneles-lemon-pepper.jpg",
+      "tag": "",
+      "available": true,
+      "options": "dressing"
+    },
+    {
+      "id": "boneles-3",
+      "category": "boneles",
+      "name": "Mango Habanero",
+      "description": "10 piezas con salsa Mango-habanero",
+      "price": 130.0,
+      "image": "assets/food/boneles-mango-habanero.jpg",
+      "tag": "",
+      "available": true,
+      "options": "dressing"
+    },
+    {
+      "id": "boneles-4",
+      "category": "boneles",
+      "name": "Buffalo",
+      "description": "10 piezas bañadas con salsa Buffalo picosas",
+      "price": 130.0,
+      "image": "assets/food/boneles-buffalo.jpg",
+      "tag": "",
+      "available": true,
+      "options": "dressing"
+    },
+    {
+      "id": "banderillas-1",
+      "category": "banderillas",
+      "name": "Clásica",
+      "description": "Banderilla cubierta de PANKO.",
+      "price": 70.0,
+      "image": "assets/food/banderilla-clasica.jpg",
+      "tag": "",
+      "available": true,
+      "options": "banderilla"
+    },
+    {
+      "id": "banderillas-2",
+      "category": "banderillas",
+      "name": "Flamin Hot",
+      "description": "Banderilla cubierta de Flamin Hot.",
+      "price": 75.0,
+      "image": "assets/food/banderilla-flamin-hot.jpg",
+      "tag": "",
+      "available": true,
+      "options": "banderilla"
+    },
+    {
+      "id": "banderillas-3",
+      "category": "banderillas",
+      "name": "Doritos Nachos",
+      "description": "Banderilla cubierta de Doritos Nachos.",
+      "price": 75.0,
+      "image": "assets/food/banderilla-doritos-nachos.jpg",
+      "tag": "",
+      "available": true,
+      "options": "banderilla"
+    },
+    {
+      "id": "entradas-1",
+      "category": "entradas",
+      "name": "Papas a la francesa",
+      "description": "300 gramos.",
+      "price": 50.0,
+      "image": "assets/food/papas.jpg",
+      "tag": "",
+      "available": true,
+      "options": "none"
+    },
+    {
+      "id": "entradas-2",
+      "category": "entradas",
+      "name": "Dedos de queso",
+      "description": "6 piezas.",
+      "price": 50.0,
+      "image": "assets/food/dedos-queso.jpg",
+      "tag": "",
+      "available": true,
+      "options": "none"
+    },
+    {
+      "id": "entradas-3",
+      "category": "entradas",
+      "name": "Dedos de queso con papas",
+      "description": "6 piezas con papas.",
+      "price": 80.0,
+      "image": "assets/food/dedos-queso-papas.jpg",
+      "tag": "",
+      "available": true,
+      "options": "none"
+    },
+    {
+      "id": "entradas-4",
+      "category": "entradas",
+      "name": "Aros de cebolla",
+      "description": "10 piezas.",
+      "price": 60.0,
+      "image": "assets/food/aros-cebolla.jpg",
+      "tag": "",
+      "available": true,
+      "options": "none"
+    },
+    {
+      "id": "entradas-5",
+      "category": "entradas",
+      "name": "Salchipulpos + Papas",
+      "description": "",
+      "price": 70.0,
+      "image": "assets/food/salchipulpos-papas.jpg",
+      "tag": "",
+      "available": true,
+      "options": "none"
+    },
+    {
+      "id": "combos-1",
+      "category": "combos",
+      "name": "Kukul Wings",
+      "description": "20 alitas + 1 orden de aros de cebolla + 1 orden de dedos de queso + 1 orden de papas Gratis.",
+      "price": 300.0,
+      "image": "assets/food/combo-kukul-wings.jpg",
+      "tag": "20 Alitas",
+      "available": true,
+      "options": "combo-wings"
+    },
+    {
+      "id": "combos-2",
+      "category": "combos",
+      "name": "Kaax Ki´ (Pollo Rico)",
+      "description": "20 Boneles + 1 orden de aros de cebolla + 1 orden de dedos de queso + 1 orden de papas Gratis.",
+      "price": 360.0,
+      "image": "assets/food/combo-kaax-ki.jpg",
+      "tag": "20 Boneles",
+      "available": true,
+      "options": "combo-wings"
+    },
+    {
+      "id": "combos-3",
+      "category": "combos",
+      "name": "Combo Mini Banderillas",
+      "description": "4 mini banderillas mixtas.",
+      "price": 75.0,
+      "image": "assets/food/combo-mini-banderillas.jpg",
+      "tag": "Mini",
+      "available": true,
+      "options": "mini-banderilla"
+    }
+  ]
+}

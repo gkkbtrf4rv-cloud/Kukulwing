@@ -283,6 +283,7 @@ body.cart-lock{overflow:hidden}
 }
 @media(prefers-reduced-motion:reduce){.product-modal,.cart-drawer,.cart-overlay,.product-overlay,.toast{transition:none!important}.cart-count.bump{animation:none!important}}
 
+.category-note{color:#aaa;margin-top:14px} [data-open-cart]:disabled{opacity:.5;cursor:wait}
 </style>
 </head>
 <body>
@@ -304,7 +305,7 @@ body.cart-lock{overflow:hidden}
     <div class="hero-wordmark" aria-label="Kukul Wings"><img src="assets/kukul-wings-letras.png" alt="Kukul Wings"></div>
     <h2>¡POLLO CON SABOR QUE TE HACE VOLVER!</h2>
     <p>Todo se cocina de <strong>0 a 100%</strong>. Disfruta nuestras alitas, boneles, banderillas y combos.</p>
-    <div class="buttons"><button type="button" class="btn red" data-open-cart>🛒 Armar pedido</button><a class="btn gold" href="menu.pdf" target="_blank">📄 Ver menú PDF</a></div>
+    <div class="buttons"><button type="button" class="btn red" data-open-cart>🛒 Armar pedido</button><a class="btn gold" href="#alitas" data-menu-link>Ver menú actualizado</a></div>
   </div>
   <div class="hero-logo"><img src="assets/kukul-logo-dragon.png" alt="Logo Kukul Wings"></div>
 </section>
@@ -447,10 +448,12 @@ body.cart-lock{overflow:hidden}
       <a href="https://www.instagram.com/kukulwings?utm_source=ig_web_button_share_sheet&igsi=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer" aria-label="Instagram de Kukul Wings">◎ Instagram</a>
       <a href="https://www.tiktok.com/@kukulwings?_r=1&_t=ZS-99P647NfYgO" target="_blank" rel="noopener noreferrer" aria-label="TikTok de Kukul Wings">♪ TikTok</a>
     </div>
+    <p style="margin:20px 0"><a href="/admin" style="color:#888;font-size:.8rem">Administración</a></p>
     <p style="margin-top:18px;font-size:.85rem">Las imágenes son de carácter ilustrativo · Gracias por su preferencia ❤️</p>
   </div>
 </footer>
 <button type="button" class="float cart-float" data-open-cart aria-label="Abrir carrito"><span>🛒</span><span class="cart-label">Mi pedido</span><b class="cart-count" id="cartCount">0</b></button>
+<script src="assets/site-content.js"></script>
 <script>
 (() => {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -693,8 +696,10 @@ body.cart-lock{overflow:hidden}
 
 
 <script>
-(() => {
-  const PHONE = '525613049571';
+(async () => {
+  let content;
+  try { content = await window.kukulReady; } catch { return; }
+  const PHONE = content.business.whatsapp;
   const GREETING = '¡¡Hola Kukul!! Quiero realizar el siguiente pedido. 🐉';
   const wingFlavors = ['Salsa BBQ','Lemon Pepper','Mango Habanero','Buffalo'];
   const dressings = ['Ranch','Queso amarillo','Miel mostaza'];
@@ -733,46 +738,33 @@ body.cart-lock{overflow:hidden}
   const slug = (s) => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 
   let cart = [];
-  try { cart = JSON.parse(localStorage.getItem('kukulCartV1') || '[]'); if (!Array.isArray(cart)) cart = []; } catch { cart = []; }
+  try { cart = JSON.parse(localStorage.getItem('kukulCartV2') || '[]'); if (!Array.isArray(cart)) cart = []; } catch { cart = []; }
   try {
     deliveryAddress.value = localStorage.getItem('kukulDeliveryAddress') || '';
     deliveryReference.value = localStorage.getItem('kukulDeliveryReference') || '';
   } catch {}
 
   const saveCart = () => {
-    try { localStorage.setItem('kukulCartV1', JSON.stringify(cart)); } catch {}
+    try { localStorage.setItem('kukulCartV2', JSON.stringify(cart)); } catch {}
   };
 
-  const productFromCard = (card) => {
-    const section = card.closest('section[id]');
-    const category = section?.id || 'producto';
-    const name = card.querySelector('h3')?.textContent.trim() || 'Producto';
-    const priceText = card.querySelector('.price')?.textContent || '$0';
-    const price = Number(priceText.replace(/[^0-9.]/g,'')) || 0;
-    const description = card.querySelector('p')?.textContent.trim() || '';
-    let id = `${category}-${slug(name)}`;
-    if (category === 'alitas' && !/Kukul Specials/i.test(name)) id = 'alitas-regular';
-    if (category === 'boneles') id = 'boneles-regular';
-    return { id, category, name, price, description };
-  };
-
-  document.querySelectorAll('#alitas .card, #boneles .card, #banderillas .card, #entradas .card, #combos .card').forEach((card) => {
-    if (card.querySelector('.add-product')) return;
-    const product = productFromCard(card);
+  // A saved cart always uses the current catalog prices and availability.
+  cart = cart.filter(item => content.products.some(p => p.id === item.productId && p.available));
+  cart.forEach(item => { const p = content.products.find(p => p.id === item.productId); item.unitPrice = p.price; item.productName = p.name; item.category = p.category; });
+  saveCart();
+  document.querySelectorAll('[data-product-id]').forEach(card => {
+    const product = content.products.find(p => p.id === card.dataset.productId);
     const button = document.createElement('button');
-    button.type = 'button';
-    button.className = 'add-product';
-    button.textContent = '＋ Agregar';
+    button.type = 'button'; button.className = 'add-product'; button.textContent = '＋ Agregar';
     button.setAttribute('aria-label', `Agregar ${product.name}`);
-    button.addEventListener('click', () => openProduct(product));
-    card.appendChild(button);
+    button.addEventListener('click', () => openProduct(product)); card.appendChild(button);
   });
 
   const selectField = (label, id, options, selected='') => `
     <div class="option-group">
       <label class="group-label" for="${id}">${label}</label>
       <select id="${id}" name="${id}">
-        ${options.map(v => `<option value="${v.replace(/"/g,'&quot;')}" ${v===selected?'selected':''}>${v}</option>`).join('')}
+        ${options.map(v => `<option value="${escapeHtml(v)}" ${v===selected?'selected':''}>${escapeHtml(v)}</option>`).join('')}
       </select>
     </div>`;
 
@@ -780,40 +772,24 @@ body.cart-lock{overflow:hidden}
     <div class="option-group" data-check-group="${id}">
       <label class="group-label">${label}</label>
       <div class="check-grid">
-        ${options.map((v,i) => `<label class="check-option"><input type="checkbox" name="${id}" value="${v.replace(/"/g,'&quot;')}" ${i===0?'checked':''}> <span>${v}</span></label>`).join('')}
+        ${options.map((v,i) => `<label class="check-option"><input type="checkbox" name="${id}" value="${escapeHtml(v)}" ${i===0?'checked':''}> <span>${escapeHtml(v)}</span></label>`).join('')}
       </div>
     </div>`;
 
   const optionsForProduct = (p) => {
     let html = '';
-    if (p.category === 'alitas') {
-      if (!/Kukul Specials/i.test(p.name)) html += selectField('Salsa / sabor','flavor',wingFlavors,p.name);
-      else html += '<div class="option-group"><label class="group-label">Sabor</label><div>Kukul Specials · queso manchego gratinado</div></div>';
+    if (p.options === 'dressing' || p.options === 'combo-wings') {
+      if (p.options === 'combo-wings') html += selectField('Salsa / sabor','flavor',wingFlavors,wingFlavors[0]);
       html += selectField('Aderezo de 2 oz.','dressing',dressings,dressings[0]);
-    } else if (p.category === 'boneles') {
-      html += selectField('Salsa / sabor','flavor',wingFlavors,p.name);
-      html += selectField('Aderezo de 2 oz.','dressing',dressings,dressings[0]);
-    } else if (p.category === 'banderillas') {
-      html += selectField('Relleno','filling',banderillaFillings,banderillaFillings[0]);
-      html += checkboxField('Aderezos','bandDressings',banderillaDressings);
-    } else if (p.category === 'combos') {
-      if (/^Kukul Wings$/i.test(p.name)) {
-        html += selectField('Salsa para las alitas','flavor',wingFlavors,wingFlavors[0]);
-        html += selectField('Aderezo','dressing',dressings,dressings[0]);
-      } else if (/Kaax Ki/i.test(p.name)) {
-        html += selectField('Sabor para los boneless','flavor',wingFlavors,wingFlavors[0]);
-        html += selectField('Aderezo','dressing',dressings,dressings[0]);
-      } else if (/Mini Banderillas/i.test(p.name)) {
-        html += checkboxField('Aderezos','bandDressings',banderillaDressings);
-      }
     }
+    if (p.options === 'banderilla') html += selectField('Relleno','filling',banderillaFillings,banderillaFillings[0]);
+    if (p.options === 'banderilla' || p.options === 'mini-banderilla') html += checkboxField('Aderezos','bandDressings',banderillaDressings);
     return html;
   };
 
   function openProduct(product){
     activeProduct = product;
-    modalTitle.textContent = product.category === 'alitas' && !/Kukul Specials/i.test(product.name) ? 'Alitas' :
-      product.category === 'boneles' ? 'Boneles' : product.name;
+    modalTitle.textContent = product.name;
     modalPrice.textContent = `${money(product.price)} c/u`;
     productOptions.innerHTML = optionsForProduct(product);
     productQty.value = 1;
@@ -851,9 +827,8 @@ body.cart-lock{overflow:hidden}
   }
 
   function displayName(item){
-    if (item.category === 'alitas' && !/Kukul Specials/i.test(item.productName)) return 'Alitas';
-    if (item.category === 'boneles') return 'Boneles';
-    return item.productName;
+    const category = content.categories.find(c => c.id === item.category)?.name;
+    return category ? `${category} · ${item.productName}` : item.productName;
   }
 
   productForm.addEventListener('submit', (event) => {
@@ -936,7 +911,7 @@ body.cart-lock{overflow:hidden}
   function totals(){
     const subtotal = cart.reduce((sum,item) => sum + item.unitPrice * item.quantity, 0);
     const delivery = getDeliveryType();
-    const shipping = delivery === 'delivery' ? (subtotal >= 150 ? 0 : 10) : 0;
+    const shipping = delivery === 'delivery' ? (subtotal >= content.business.freeDeliveryFrom ? 0 : content.business.deliveryFee) : 0;
     return { subtotal, shipping, total: subtotal + shipping, delivery };
   }
 
