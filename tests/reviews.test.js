@@ -1,0 +1,31 @@
+import {test,before,after} from 'node:test';
+import assert from 'node:assert/strict';
+import {randomBytes,scryptSync} from 'node:crypto';
+import {createServer} from '../scripts/dev.mjs';
+import {validateContent} from '../lib/validation.js';
+import {readFile,rm} from 'node:fs/promises';
+let server,origin,cookie;
+before(async()=>{process.env.KUKUL_LOCAL_STORAGE='1';const salt=randomBytes(16).toString('hex');process.env.ADMIN_PASSWORD_HASH=salt+':'+scryptSync('test-admin-password',salt,64).toString('hex');process.env.SESSION_SECRET=randomBytes(48).toString('hex');server=createServer();await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));origin='http://127.0.0.1:'+server.address().port;});
+after(async()=>{await new Promise(resolve=>server.close(resolve));await rm(new URL('../.local-data/reviews.json',import.meta.url),{force:true});});
+const call=(path,method='GET',data,auth=false)=>fetch(origin+path,{method,headers:{Origin:origin,'Content-Type':'application/json',...(auth&&cookie?{Cookie:cookie}:{})},...(data?{body:JSON.stringify(data)}:{})});
+test('delivery radius defaults to five km and is validated',async()=>{
+ const data=JSON.parse(await readFile(new URL('../data/default-content.json',import.meta.url)));
+ assert.equal(validateContent(data).business.deliveryRadiusKm,5);
+ data.business.deliveryRadiusKm=101;assert.throws(()=>validateContent(data));
+ data.business.deliveryRadiusKm=0;assert.throws(()=>validateContent(data));
+});
+test('reviews require moderation, enforce validation and admin authorization',async()=>{
+ const login=await call('/api/session','POST',{password:'test-admin-password'});assert.equal(login.status,200);cookie=login.headers.get('set-cookie').split(';')[0];
+ assert.equal((await call('/api/reviews?admin=1')).status,401);
+ assert.equal((await call('/api/reviews','POST',{name:'',rating:5,comment:'Excelente servicio'})).status,400);
+ const submitted=await call('/api/reviews','POST',{name:'Cliente',rating:5,comment:'Muy buenas alitas y servicio rápido',website:''});
+ assert.equal(submitted.status,201);
+ assert.equal((await call('/api/reviews').then(r=>r.json())).reviews.length,0);
+ const admin=await call('/api/reviews?admin=1','GET',null,true).then(r=>r.json());
+ assert.equal(admin.reviews.length,1);assert.equal(admin.reviews[0].status,'pending');
+ assert.equal((await call('/api/reviews','PATCH',{id:admin.reviews[0].id,action:'approved'})).status,401);
+ assert.equal((await call('/api/reviews','PATCH',{id:admin.reviews[0].id,action:'approved'},true)).status,200);
+ assert.equal((await call('/api/reviews').then(r=>r.json())).reviews.length,1);
+ assert.equal((await call('/api/reviews','PATCH',{id:admin.reviews[0].id,action:'delete'},true)).status,200);
+ assert.equal((await call('/api/reviews').then(r=>r.json())).reviews.length,0);
+});
