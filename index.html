@@ -674,16 +674,12 @@ body.cart-lock{overflow:hidden}
       <div class="delivery-address" id="deliveryAddressBox" hidden>
         <strong>📍 Dirección de entrega</strong>
         <div class="address-fields">
-          <div class="address-suggest-wrap">
-            <label for="deliveryStreet">Calle *</label>
-            <input id="deliveryStreet" maxlength="120" autocomplete="address-line1" placeholder="Ej. Avenida de los Maestros" required aria-autocomplete="list" aria-controls="addressSuggestions" aria-expanded="false">
-            <div id="addressSuggestions" class="address-suggestions" role="listbox" hidden></div>
-            <span class="address-help" id="addressSuggestStatus" role="status">Escribe al menos 4 letras para ver sugerencias. También puedes escribirla manualmente.</span>
-          </div>
+          <label for="deliveryZip">1. Código postal *<input id="deliveryZip" inputmode="numeric" maxlength="5" pattern="[0-9]{5}" autocomplete="postal-code" placeholder="Ej. 54160" required></label>
+          <span class="address-help" id="postalStatus" role="status" aria-live="polite">Escribe los 5 dígitos para buscar colonias.</span>
+          <label for="deliveryNeighborhood">2. Colonia *<select id="postalNeighborhoodSelect" aria-label="Selecciona tu colonia" hidden><option value="">Selecciona una colonia</option></select><input id="deliveryNeighborhood" maxlength="100" autocomplete="address-level3" placeholder="Colonia (puedes escribirla manualmente)" required></label>
+          <div class="address-pair"><label for="deliveryCity">Municipio o alcaldía *<input id="deliveryCity" maxlength="100" autocomplete="address-level2" placeholder="Municipio" required></label><label for="deliveryState">Estado *<input id="deliveryState" maxlength="100" autocomplete="address-level1" value="Estado de México" required></label></div>
+          <label for="deliveryStreet">3. Calle *<input id="deliveryStreet" maxlength="120" autocomplete="address-line1" placeholder="Ej. Avenida de los Maestros" required></label>
           <div class="address-pair"><label for="deliveryNumber">Número exterior *<input id="deliveryNumber" maxlength="15" autocomplete="off" placeholder="24" required></label><label for="deliveryInterior">Interior (opcional)<input id="deliveryInterior" maxlength="30" autocomplete="address-line2" placeholder="Depto. 2"></label></div>
-          <label for="deliveryNeighborhood">Colonia *<input id="deliveryNeighborhood" maxlength="100" autocomplete="address-level3" placeholder="La Joya Ixtacala" required></label>
-          <div class="address-pair"><label for="deliveryZip">Código postal *<input id="deliveryZip" inputmode="numeric" maxlength="5" pattern="[0-9]{5}" autocomplete="postal-code" placeholder="54160" required></label><label for="deliveryCity">Municipio o alcaldía *<input id="deliveryCity" maxlength="100" autocomplete="address-level2" placeholder="Tlalnepantla" required></label></div>
-          <label for="deliveryState">Estado *<input id="deliveryState" maxlength="100" autocomplete="address-level1" value="Estado de México" required></label>
         </div><div class="coverage-check"><button type="button" id="checkCoverage" class="coverage-button">📍 Verificar mi zona de entrega</button><p id="coverageStatus" role="status" aria-live="polite">Verifica tu ubicación para confirmar el envío.</p></div>
         <label for="deliveryReference" style="margin-top:10px">Referencias de entrega (opcional)</label>
         <input id="deliveryReference" maxlength="180" placeholder="Ej. portón negro, entre Calle A y Calle B">
@@ -742,8 +738,8 @@ body.cart-lock{overflow:hidden}
     zip:document.querySelector('#deliveryZip'),city:document.querySelector('#deliveryCity'),
     state:document.querySelector('#deliveryState')
   };
-  const addressSuggestions=document.querySelector('#addressSuggestions');
-  const addressSuggestStatus=document.querySelector('#addressSuggestStatus');
+  const postalStatus=document.querySelector('#postalStatus');
+  const postalNeighborhoodSelect=document.querySelector('#postalNeighborhoodSelect');
   const deliveryAddress={get value(){const a=addressFields;return [
     a.street.value.trim()+' '+a.number.value.trim()+(a.interior.value.trim()?', Int. '+a.interior.value.trim():''),
     'Col. '+a.neighborhood.value.trim(),'C.P. '+a.zip.value.trim(),
@@ -1058,51 +1054,48 @@ body.cart-lock{overflow:hidden}
     updateWhatsAppLink();
   }
   for(const field of Object.values(addressFields))field.addEventListener('input',addressChanged);
-  let addressTimer,requestController,searchSequence=0;
-  const hideSuggestions=()=>{addressSuggestions.hidden=true;addressSuggestions.replaceChildren();addressFields.street.setAttribute('aria-expanded','false');};
-  addressFields.street.addEventListener('input',()=>{
-    ++searchSequence;clearTimeout(addressTimer);requestController?.abort();hideSuggestions();
-    const query=addressFields.street.value.trim();
-    if(query.length<4){addressSuggestStatus.textContent='Escribe al menos 4 letras para ver sugerencias.';return;}
-    addressSuggestStatus.textContent='Buscando sugerencias…';
-    const sequence=searchSequence;
-    addressTimer=setTimeout(async()=>{
-      requestController=new AbortController();
+  // SEPOMEX-based postcode lookup. Manual entry remains available when the free API is unavailable.
+  let postalController,postalSequence=0;
+  const postalCache=new Map();
+  addressFields.zip.addEventListener('input',()=>{
+    const cp=addressFields.zip.value.replace(/\D/g,'').slice(0,5);
+    if(addressFields.zip.value!==cp)addressFields.zip.value=cp;
+    postalController?.abort();const sequence=++postalSequence;
+    postalNeighborhoodSelect.hidden=true;postalNeighborhoodSelect.replaceChildren(new Option('Selecciona una colonia',''));
+    if(cp.length!==5){postalStatus.textContent='Escribe los 5 dígitos para buscar colonias.';addressChanged();return;}
+    postalStatus.textContent='Buscando colonias…';
+    (async()=>{
       try{
-        const url=new URL('https://photon.komoot.io/api/');
-        url.searchParams.set('q',query);url.searchParams.set('limit','5');
-        url.searchParams.set('lat','19.527113');url.searchParams.set('lon','-99.1778847');
-        url.searchParams.set('lang','es');
-        const response=await fetch(url,{signal:requestController.signal});
-        if(!response.ok)throw Error('No hay sugerencias disponibles.');
-        const result=await response.json();
-        if(sequence!==searchSequence||addressFields.street.value.trim()!==query)return;
-        hideSuggestions();
-        const features=(result.features||[]).filter(x=>x.properties?.countrycode==='MX');
-        if(!features.length){addressSuggestStatus.textContent='Sin coincidencias. Puedes completar la dirección manualmente.';return;}
-        for(const feature of features){
-          const p=feature.properties||{};
-          const label=[p.name,p.street,p.housenumber,p.district||p.suburb,p.city||p.county,p.postcode,p.state].filter(Boolean).join(', ');
-          const option=document.createElement('button');option.type='button';option.className='address-option';option.setAttribute('role','option');option.textContent=label;
-          option.addEventListener('click',()=>{
-            addressFields.street.value=p.street||p.name||query;
-            if(p.housenumber)addressFields.number.value=p.housenumber;
-            if(p.district||p.suburb)addressFields.neighborhood.value=p.district||p.suburb;
-            if(p.postcode&&/^\d{5}$/.test(p.postcode))addressFields.zip.value=p.postcode;
-            if(p.city||p.county)addressFields.city.value=p.city||p.county;
-            if(p.state)addressFields.state.value=p.state;
-            hideSuggestions();addressSuggestStatus.textContent='Sugerencia aplicada. Revisa número, colonia y código postal antes de pedir.';
-            addressChanged();addressFields.number.focus();
-          });
-          addressSuggestions.append(option);
+        let data=postalCache.get(cp);
+        if(!data){
+          postalController=new AbortController();
+          const response=await fetch('https://postali.app/api/v1/mx/cp/'+encodeURIComponent(cp),{signal:postalController.signal});
+          if(!response.ok)throw Error('No encontrado');
+          data=await response.json();postalCache.set(cp,data);
         }
-        addressSuggestions.hidden=false;addressFields.street.setAttribute('aria-expanded','true');
-        addressSuggestStatus.textContent='Selecciona una sugerencia o continúa escribiendo.';
-      }catch(error){if(error.name!=='AbortError')addressSuggestStatus.textContent='No hay sugerencias disponibles. Puedes escribir tu dirección manualmente.';}
-    },550);
+        if(sequence!==postalSequence||addressFields.zip.value!==cp)return;
+        if(data.municipio)addressFields.city.value=data.municipio;
+        if(data.estado)addressFields.state.value=data.estado;
+        const colonias=[...new Set((data.asentamientos||[]).map(x=>x.nombre).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));
+        for(const colonia of colonias)postalNeighborhoodSelect.add(new Option(colonia,colonia));
+        if(colonias.length){
+          postalNeighborhoodSelect.hidden=false;
+          if(!colonias.includes(addressFields.neighborhood.value))addressFields.neighborhood.value='';
+          postalStatus.textContent='Selecciona una colonia o escríbela manualmente.';
+        }else postalStatus.textContent='Sin colonias disponibles. Escribe tu dirección manualmente.';
+        addressChanged();
+      }catch(error){if(error.name!=='AbortError'&&sequence===postalSequence)postalStatus.textContent='No pudimos consultar el código postal. Completa los campos manualmente.';}
+    })();
+    addressChanged();
   });
-  addressFields.street.addEventListener('keydown',event=>{if(event.key==='Escape')hideSuggestions();});
-  document.addEventListener('click',event=>{if(!event.target.closest('.address-suggest-wrap'))hideSuggestions();});
+  postalNeighborhoodSelect.addEventListener('change',()=>{
+    if(postalNeighborhoodSelect.value)addressFields.neighborhood.value=postalNeighborhoodSelect.value;
+    addressChanged();
+  });
+  addressFields.neighborhood.addEventListener('input',()=>{
+    if(postalNeighborhoodSelect.value!==addressFields.neighborhood.value)postalNeighborhoodSelect.value='';
+  });
+  if(/^\d{5}$/.test(addressFields.zip.value))addressFields.zip.dispatchEvent(new Event('input'));
   deliveryReference.addEventListener('input', () => {
     try { localStorage.setItem('kukulDeliveryReference', deliveryReference.value); } catch {}
     updateWhatsAppLink();
@@ -1138,7 +1131,7 @@ body.cart-lock{overflow:hidden}
 .kukul-reviews .review-card{padding:14px 0;border-bottom:1px solid #d8c9b5}
 .kukul-reviews .review-stars{color:#a66a08;font-size:1.25rem}
 .kukul-reviews .review-honeypot{position:absolute;left:-10000px}
-.address-fields{display:grid;gap:10px;margin-top:10px}.address-fields label{display:block;font-size:.88rem;font-weight:600}.address-fields input{display:block;box-sizing:border-box;width:100%;margin-top:5px;padding:11px;border:1px solid #a9a09a;border-radius:9px;font:inherit}.address-pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}.address-suggest-wrap{position:relative}.address-suggestions{position:absolute;z-index:100;background:#fff;color:#201b18;border:1px solid #b7aaa0;border-radius:10px;max-height:220px;overflow:auto;box-shadow:0 8px 24px #0003;width:100%}.address-option{display:block;width:100%;padding:11px;text-align:left;background:white;border:0;border-bottom:1px solid #eee;cursor:pointer;color:#241d19}.address-option:hover,.address-option:focus{background:#fff2d9}.address-fields .address-help{display:block;font-size:.78rem;margin-top:5px}@media(max-width:390px){.address-pair{grid-template-columns:1fr}}
+.address-fields{display:grid;gap:10px;margin-top:10px}.address-fields label{display:block;font-size:.88rem;font-weight:600}.address-fields input{display:block;box-sizing:border-box;width:100%;margin-top:5px;padding:11px;border:1px solid #a9a09a;border-radius:9px;font:inherit}.address-pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}.address-suggest-wrap{position:relative}.address-suggestions{position:absolute;z-index:100;background:#fff;color:#201b18;border:1px solid #b7aaa0;border-radius:10px;max-height:220px;overflow:auto;box-shadow:0 8px 24px #0003;width:100%}.address-option{display:block;width:100%;padding:11px;text-align:left;background:white;border:0;border-bottom:1px solid #eee;cursor:pointer;color:#241d19}.address-option:hover,.address-option:focus{background:#fff2d9}.address-fields .address-help{display:block;font-size:.78rem;margin-top:5px}.address-fields select{display:block;box-sizing:border-box;width:100%;margin:5px 0;padding:11px;border:1px solid #a9a09a;border-radius:9px;font:inherit;background:#fff}.address-fields select[hidden]{display:none}@media(max-width:390px){.address-pair{grid-template-columns:1fr}}
 </style>
 <script src="assets/reviews.js" defer></script>
 </body>
