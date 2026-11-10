@@ -39,3 +39,7 @@ El formulario de envío solicita calle, número exterior, interior opcional, col
 ## Captura de dirección por código postal (México)
 
 El cliente escribe primero su CP mexicano de 5 dígitos. Se consulta https://postali.app/api/v1/mx/cp/{cp}, servicio gratuito sin clave, para ofrecer las colonias y completar municipio y estado. Después se capturan calle, número e interior. El usuario puede escribir colonia y municipio manualmente si no hay resultados o la API falla. La consulta de CP no verifica el domicilio exacto: el radio configurable sigue comprobándose mediante geolocalización del dispositivo. La API externa puede tener límites o interrupciones; para alta demanda conviene una fuente de datos propia.
+
+## Cobertura basada en dirección (propuesta)
+
+El botón «Verificar dirección de entrega» consulta bajo demanda Nominatim/OpenStreetMap usando la dirección completa, sin solicitar la ubicación GPS del comprador. Solo se confirma automáticamente si hay una coincidencia única con número exterior y CP exactos, dentro del radio configurado y con un margen de 200 m. Si el mapa no reconoce el número, hay ambigüedad, o la dirección cae cerca del límite, se solicita confirmación directa con el negocio. Los resultados son aproximados y no sustituyen rutas de reparto reales. El servicio público Nominatim tiene límites de uso (máximo 1 solicitud por segundo por aplicación, entre otras condiciones); antes de un uso comercial intensivo debe emplearse un proveedor propio o contratado y revisar sus términos.

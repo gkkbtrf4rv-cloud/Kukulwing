@@ -680,7 +680,7 @@ body.cart-lock{overflow:hidden}
           <div class="address-pair"><label for="deliveryCity">Municipio o alcaldía *<input id="deliveryCity" maxlength="100" autocomplete="address-level2" placeholder="Municipio" required></label><label for="deliveryState">Estado *<input id="deliveryState" maxlength="100" autocomplete="address-level1" value="Estado de México" required></label></div>
           <label for="deliveryStreet">3. Calle *<input id="deliveryStreet" maxlength="120" autocomplete="address-line1" placeholder="Ej. Avenida de los Maestros" required></label>
           <div class="address-pair"><label for="deliveryNumber">Número exterior *<input id="deliveryNumber" maxlength="15" autocomplete="off" placeholder="24" required></label><label for="deliveryInterior">Interior (opcional)<input id="deliveryInterior" maxlength="30" autocomplete="address-line2" placeholder="Depto. 2"></label></div>
-        </div><div class="coverage-check"><button type="button" id="checkCoverage" class="coverage-button">📍 Verificar mi zona de entrega</button><p id="coverageStatus" role="status" aria-live="polite">Verifica tu ubicación para confirmar el envío.</p></div>
+        </div><div class="coverage-check"><button type="button" id="checkCoverage" class="coverage-button">📍 Verificar dirección de entrega</button><p id="coverageStatus" role="status" aria-live="polite">Completa la dirección y comprueba si está dentro de la zona de entrega.</p></div>
         <label for="deliveryReference" style="margin-top:10px">Referencias de entrega (opcional)</label>
         <input id="deliveryReference" maxlength="180" placeholder="Ej. portón negro, entre Calle A y Calle B">
         <span class="address-error" id="deliveryAddressError" aria-live="polite"></span>
@@ -760,19 +760,51 @@ body.cart-lock{overflow:hidden}
     const a=Math.sin(rad(lat2-lat1)/2)**2+Math.cos(rad(lat1))*Math.cos(rad(lat2))*Math.sin(rad(lon2-lon1)/2)**2;
     return 6371*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
   };
-  function coverageValid(){return coverage?.ok===true&&coverage.radius===radius;}
-  function showCoverage(){if(!coverageStatus)return;coverageStatus.textContent=coverage?coverage.message:`Verifica tu ubicación para envíos dentro de ${radius} km.`;coverageStatus.dataset.state=coverage?.ok?'ok':coverage?'error':'pending';}
-  checkCoverage.addEventListener('click',()=>{
-    if(!origin||Math.abs(origin[0])>90||Math.abs(origin[1])>180){coverage={ok:false,message:'La ubicación del negocio no tiene coordenadas válidas. Contacta a Kukul Wings.'};showCoverage();renderCart();return;}
-    if(!navigator.geolocation){coverage={ok:false,message:'Tu navegador no permite verificar ubicación. Puedes recoger tu pedido en el local.'};showCoverage();renderCart();return;}
-    coverage=null;checkCoverage.disabled=true;coverageStatus.textContent='Comprobando ubicación…';renderCart();
-    navigator.geolocation.getCurrentPosition(pos=>{
-      checkCoverage.disabled=false;
-      const d=distanceKm(origin[0],origin[1],pos.coords.latitude,pos.coords.longitude);
-      const uncertainty=(pos.coords.accuracy||0)/1000;
-      const ok=d+uncertainty<=radius;
-      coverage={ok,radius,latitude:pos.coords.latitude,longitude:pos.coords.longitude,distance:d,message:ok?`¡Sí llegamos! Estás a ${d.toFixed(2)} km del negocio.`:d-uncertainty>radius?`Estás fuera de la zona de envíos (radio de ${radius} km). Puedes pedir para recoger.`:`Tu ubicación no es suficientemente precisa para confirmar el radio de ${radius} km. Intenta de nuevo o pide para recoger.`};
-      showCoverage();renderCart();
+  const deliveryAddressKey=()=>['street','number','neighborhood','zip','city','state'].map(k=>addressFields[k].value.trim().toLocaleLowerCase('es-MX')).join('|');
+  let coverageSequence=0;
+  function coverageValid(){return coverage?.ok===true&&coverage.radius===radius&&coverage.addressKey===deliveryAddressKey();}
+  function showCoverage(){
+    if(!coverageStatus)return;
+    coverageStatus.textContent=coverage?.message||`Completa la dirección y verifica si está dentro de ${radius} km del negocio.`;
+    coverageStatus.dataset.state=coverageValid()?'ok':coverage?'error':'pending';
+  }
+  checkCoverage.addEventListener('click',async()=>{
+    if(!origin||Math.abs(origin[0])>90||Math.abs(origin[1])>180){coverage={ok:false,message:'No hay coordenadas válidas del negocio. Contacta a Kukul Wings.'};showCoverage();renderCart();return;}
+    if(!addressComplete()){coverage={ok:false,message:'Primero completa código postal, colonia, municipio, calle y número exterior.'};showCoverage();addressFields.zip.focus();renderCart();return;}
+    const key=deliveryAddressKey(),sequence=++coverageSequence;
+    coverage=null;checkCoverage.disabled=true;coverageStatus.textContent='Buscando la dirección exacta…';renderCart();
+    try{
+      const url=new URL('https://nominatim.openstreetmap.org/search');
+      url.searchParams.set('q',deliveryAddress.value);
+      url.searchParams.set('format','jsonv2');url.searchParams.set('addressdetails','1');
+      url.searchParams.set('countrycodes','mx');url.searchParams.set('limit','5');
+      const response=await fetch(url.toString(),{headers:{Accept:'application/json'}});
+      if(!response.ok)throw Error('No se pudo consultar el mapa');
+      const results=await response.json();
+      if(sequence!==coverageSequence||key!==deliveryAddressKey())return;
+      const clean=v=>String(v||'').trim().toLocaleLowerCase('es-MX').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+      const targetNumber=clean(addressFields.number.value);
+      const targetZip=addressFields.zip.value.trim();
+      const matches=results.filter(item=>{
+        const a=item.address||{};
+        return clean(a.house_number)===targetNumber&&String(a.postcode||'').trim()===targetZip&&Number.isFinite(Number(item.lat))&&Number.isFinite(Number(item.lon));
+      });
+      if(matches.length!==1){
+        coverage={ok:false,message:'No pudimos identificar de forma única la calle y número con el mapa. Revisa los datos o contacta a Kukul Wings para confirmar el envío.'};
+      }else{
+        const item=matches[0],lat=Number(item.lat),lon=Number(item.lon),d=distanceKm(origin[0],origin[1],lat,lon);
+        // Approximate geocoded coordinates: do not approve deliveries near the boundary automatically.
+        const margin=.2,ok=d<=radius-margin;
+        coverage={ok,radius,addressKey:key,latitude:lat,longitude:lon,distance:d,message:ok?`¡Sí llegamos a esa dirección! Distancia aproximada: ${d.toFixed(2)} km.`:d>radius+margin?`Esta dirección parece estar fuera de la zona de envíos (radio de ${radius} km). Puedes pedir para recoger.`:'La dirección está cerca del límite de cobertura. Contacta a Kukul Wings para confirmar el envío.'};
+      }
+    }catch{
+      if(sequence!==coverageSequence||key!==deliveryAddressKey())return;
+      coverage={ok:false,message:'No se pudo consultar el mapa. Intenta más tarde o contacta a Kukul Wings para confirmar la entrega.'};
+    }finally{
+      if(sequence===coverageSequence){checkCoverage.disabled=false;showCoverage();renderCart();}
+    }
+  });
+  showCoverage();renderCart();
     },()=>{checkCoverage.disabled=false;coverage={ok:false,message:'No pudimos acceder a tu ubicación. Activa el permiso e inténtalo de nuevo, o elige recoger en local.'};showCoverage();renderCart();},{enableHighAccuracy:true,timeout:12000,maximumAge:0});
   });
   showCoverage();
@@ -976,7 +1008,7 @@ body.cart-lock{overflow:hidden}
     lines.push(`Total: ${money(total)}`);
     lines.push(`Entrega: ${delivery === 'delivery' ? 'Envío a domicilio' : 'Recoger en local'}`);
     if (delivery === 'delivery') {
-      if(coverageValid())lines.push(`📍 Ubicación verificada: https://www.google.com/maps?q=${coverage.latitude},${coverage.longitude} (${coverage.distance.toFixed(2)} km aprox.)`);
+      if(coverageValid())lines.push(`📍 Dirección geocodificada (aproximada): https://www.google.com/maps?q=${coverage.latitude},${coverage.longitude} (${coverage.distance.toFixed(2)} km aprox.)`);
       const address = deliveryAddress.value.trim();
       const reference = deliveryReference.value.trim();
       if (address) lines.push(`📍 Dirección: ${address}`);
@@ -1050,6 +1082,7 @@ body.cart-lock{overflow:hidden}
   orderNote.addEventListener('input', updateWhatsAppLink);
   function addressChanged(){
     deliveryAddressError.textContent='';
+    ++coverageSequence;coverage=null;showCoverage();renderCart();
     try{localStorage.setItem('kukulDeliveryAddressFields',JSON.stringify(Object.fromEntries(Object.entries(addressFields).map(([key,field])=>[key,field.value]))));}catch{}
     updateWhatsAppLink();
   }
