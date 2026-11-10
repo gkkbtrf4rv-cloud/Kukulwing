@@ -1061,11 +1061,11 @@ body.cart-lock{overflow:hidden}
   let addressTimer,requestController,searchSequence=0;
   const hideSuggestions=()=>{addressSuggestions.hidden=true;addressSuggestions.replaceChildren();addressFields.street.setAttribute('aria-expanded','false');};
   addressFields.street.addEventListener('input',()=>{
-    clearTimeout(addressTimer);requestController?.abort();hideSuggestions();
+    ++searchSequence;clearTimeout(addressTimer);requestController?.abort();hideSuggestions();
     const query=addressFields.street.value.trim();
     if(query.length<4){addressSuggestStatus.textContent='Escribe al menos 4 letras para ver sugerencias.';return;}
     addressSuggestStatus.textContent='Buscando sugerencias…';
-    const sequence=++searchSequence;
+    const sequence=searchSequence;
     addressTimer=setTimeout(async()=>{
       requestController=new AbortController();
       try{
@@ -1110,11 +1110,11 @@ body.cart-lock{overflow:hidden}
   sendWhatsApp.addEventListener('click', (e) => {
     if (!cart.length) { e.preventDefault(); return; }
     if(getDeliveryType()==='delivery'&&!coverageValid()){e.preventDefault();showCoverage();coverageStatus.scrollIntoView({behavior:'smooth',block:'center'});return;}
-    if (getDeliveryType() === 'delivery' && !deliveryAddress.value.trim()) {
+    if (getDeliveryType() === 'delivery' && !addressComplete()) {
       e.preventDefault();
       deliveryAddressError.textContent = 'Completa calle, número, colonia, código postal de 5 dígitos, municipio y estado.';
       (Object.entries(addressFields).find(([key,field])=>key!=='interior'&&(!field.value.trim()||(key==='zip'&&!/^\d{5}$/.test(field.value.trim()))))?.[1]||addressFields.street).focus();
-      deliveryAddress.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      addressFields.street.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
     updateWhatsAppLink();
