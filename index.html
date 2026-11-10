@@ -672,9 +672,19 @@ body.cart-lock{overflow:hidden}
         <label><input type="radio" name="deliveryType" value="delivery"> Envío a domicilio</label>
       </div>
       <div class="delivery-address" id="deliveryAddressBox" hidden>
-        <label for="deliveryAddress">📍 Dirección de entrega *</label>
-        <textarea id="deliveryAddress" maxlength="260" autocomplete="street-address" placeholder="Calle, número, colonia, C.P. y municipio"></textarea>
-        <span class="address-help">Escribe la dirección lo más completa posible para poder localizarte.</span><div class="coverage-check"><button type="button" id="checkCoverage" class="coverage-button">📍 Verificar mi zona de entrega</button><p id="coverageStatus" role="status" aria-live="polite">Verifica tu ubicación para confirmar el envío.</p></div>
+        <strong>📍 Dirección de entrega</strong>
+        <div class="address-fields">
+          <div class="address-suggest-wrap">
+            <label for="deliveryStreet">Calle *</label>
+            <input id="deliveryStreet" maxlength="120" autocomplete="address-line1" placeholder="Ej. Avenida de los Maestros" required aria-autocomplete="list" aria-controls="addressSuggestions" aria-expanded="false">
+            <div id="addressSuggestions" class="address-suggestions" role="listbox" hidden></div>
+            <span class="address-help" id="addressSuggestStatus" role="status">Escribe al menos 4 letras para ver sugerencias. También puedes escribirla manualmente.</span>
+          </div>
+          <div class="address-pair"><label for="deliveryNumber">Número exterior *<input id="deliveryNumber" maxlength="15" autocomplete="off" placeholder="24" required></label><label for="deliveryInterior">Interior (opcional)<input id="deliveryInterior" maxlength="30" autocomplete="address-line2" placeholder="Depto. 2"></label></div>
+          <label for="deliveryNeighborhood">Colonia *<input id="deliveryNeighborhood" maxlength="100" autocomplete="address-level3" placeholder="La Joya Ixtacala" required></label>
+          <div class="address-pair"><label for="deliveryZip">Código postal *<input id="deliveryZip" inputmode="numeric" maxlength="5" pattern="[0-9]{5}" autocomplete="postal-code" placeholder="54160" required></label><label for="deliveryCity">Municipio o alcaldía *<input id="deliveryCity" maxlength="100" autocomplete="address-level2" placeholder="Tlalnepantla" required></label></div>
+          <label for="deliveryState">Estado *<input id="deliveryState" maxlength="100" autocomplete="address-level1" value="Estado de México" required></label>
+        </div><div class="coverage-check"><button type="button" id="checkCoverage" class="coverage-button">📍 Verificar mi zona de entrega</button><p id="coverageStatus" role="status" aria-live="polite">Verifica tu ubicación para confirmar el envío.</p></div>
         <label for="deliveryReference" style="margin-top:10px">Referencias de entrega (opcional)</label>
         <input id="deliveryReference" maxlength="180" placeholder="Ej. portón negro, entre Calle A y Calle B">
         <span class="address-error" id="deliveryAddressError" aria-live="polite"></span>
@@ -726,7 +736,20 @@ body.cart-lock{overflow:hidden}
   const sendWhatsApp = document.querySelector('#sendWhatsApp');
   const orderNote = document.querySelector('#orderNote');
   const deliveryAddressBox = document.querySelector('#deliveryAddressBox');
-  const deliveryAddress = document.querySelector('#deliveryAddress');
+  const addressFields={
+    street:document.querySelector('#deliveryStreet'),number:document.querySelector('#deliveryNumber'),
+    interior:document.querySelector('#deliveryInterior'),neighborhood:document.querySelector('#deliveryNeighborhood'),
+    zip:document.querySelector('#deliveryZip'),city:document.querySelector('#deliveryCity'),
+    state:document.querySelector('#deliveryState')
+  };
+  const addressSuggestions=document.querySelector('#addressSuggestions');
+  const addressSuggestStatus=document.querySelector('#addressSuggestStatus');
+  const deliveryAddress={get value(){const a=addressFields;return [
+    a.street.value.trim()+' '+a.number.value.trim()+(a.interior.value.trim()?', Int. '+a.interior.value.trim():''),
+    'Col. '+a.neighborhood.value.trim(),'C.P. '+a.zip.value.trim(),
+    a.city.value.trim(),a.state.value.trim(),'México'
+  ].join(', ');},focus(){addressFields.street.focus();}};
+  function addressComplete(){return ['street','number','neighborhood','zip','city','state'].every(k=>addressFields[k].value.trim())&&/^\d{5}$/.test(addressFields.zip.value.trim());}
   const deliveryReference = document.querySelector('#deliveryReference');
   const deliveryAddressError = document.querySelector('#deliveryAddressError');
   const toast = document.querySelector('#cartToast');
@@ -767,7 +790,8 @@ body.cart-lock{overflow:hidden}
   let cart = [];
   try { cart = JSON.parse(localStorage.getItem('kukulCartV2') || '[]'); if (!Array.isArray(cart)) cart = []; } catch { cart = []; }
   try {
-    deliveryAddress.value = localStorage.getItem('kukulDeliveryAddress') || '';
+    const saved=JSON.parse(localStorage.getItem('kukulDeliveryAddressFields')||'{}');
+    for(const [key,field] of Object.entries(addressFields))if(typeof saved[key]==='string')field.value=saved[key];
     deliveryReference.value = localStorage.getItem('kukulDeliveryReference') || '';
   } catch {}
 
@@ -968,7 +992,7 @@ body.cart-lock{overflow:hidden}
   }
 
   function updateWhatsAppLink(){
-    if (!cart.length || (getDeliveryType()==='delivery'&&(!coverageValid()||!deliveryAddress.value.trim()))) {
+    if (!cart.length || (getDeliveryType()==='delivery'&&(!coverageValid()||!addressComplete()))) {
       sendWhatsApp.href = '#';
       sendWhatsApp.setAttribute('aria-disabled','true');
       return;
@@ -1028,11 +1052,57 @@ body.cart-lock{overflow:hidden}
     renderCart();
   }));
   orderNote.addEventListener('input', updateWhatsAppLink);
-  deliveryAddress.addEventListener('input', () => {
-    deliveryAddressError.textContent = '';
-    try { localStorage.setItem('kukulDeliveryAddress', deliveryAddress.value); } catch {}
+  function addressChanged(){
+    deliveryAddressError.textContent='';
+    try{localStorage.setItem('kukulDeliveryAddressFields',JSON.stringify(Object.fromEntries(Object.entries(addressFields).map(([key,field])=>[key,field.value]))));}catch{}
     updateWhatsAppLink();
+  }
+  for(const field of Object.values(addressFields))field.addEventListener('input',addressChanged);
+  let addressTimer,requestController,searchSequence=0;
+  const hideSuggestions=()=>{addressSuggestions.hidden=true;addressSuggestions.replaceChildren();addressFields.street.setAttribute('aria-expanded','false');};
+  addressFields.street.addEventListener('input',()=>{
+    ++searchSequence;clearTimeout(addressTimer);requestController?.abort();hideSuggestions();
+    const query=addressFields.street.value.trim();
+    if(query.length<4){addressSuggestStatus.textContent='Escribe al menos 4 letras para ver sugerencias.';return;}
+    addressSuggestStatus.textContent='Buscando sugerencias…';
+    const sequence=searchSequence;
+    addressTimer=setTimeout(async()=>{
+      requestController=new AbortController();
+      try{
+        const url=new URL('https://photon.komoot.io/api/');
+        url.searchParams.set('q',query);url.searchParams.set('limit','5');
+        url.searchParams.set('lat','19.527113');url.searchParams.set('lon','-99.1778847');
+        url.searchParams.set('lang','es');
+        const response=await fetch(url,{signal:requestController.signal});
+        if(!response.ok)throw Error('No hay sugerencias disponibles.');
+        const result=await response.json();
+        if(sequence!==searchSequence||addressFields.street.value.trim()!==query)return;
+        hideSuggestions();
+        const features=(result.features||[]).filter(x=>x.properties?.countrycode==='MX');
+        if(!features.length){addressSuggestStatus.textContent='Sin coincidencias. Puedes completar la dirección manualmente.';return;}
+        for(const feature of features){
+          const p=feature.properties||{};
+          const label=[p.name,p.street,p.housenumber,p.district||p.suburb,p.city||p.county,p.postcode,p.state].filter(Boolean).join(', ');
+          const option=document.createElement('button');option.type='button';option.className='address-option';option.setAttribute('role','option');option.textContent=label;
+          option.addEventListener('click',()=>{
+            addressFields.street.value=p.street||p.name||query;
+            if(p.housenumber)addressFields.number.value=p.housenumber;
+            if(p.district||p.suburb)addressFields.neighborhood.value=p.district||p.suburb;
+            if(p.postcode&&/^\d{5}$/.test(p.postcode))addressFields.zip.value=p.postcode;
+            if(p.city||p.county)addressFields.city.value=p.city||p.county;
+            if(p.state)addressFields.state.value=p.state;
+            hideSuggestions();addressSuggestStatus.textContent='Sugerencia aplicada. Revisa número, colonia y código postal antes de pedir.';
+            addressChanged();addressFields.number.focus();
+          });
+          addressSuggestions.append(option);
+        }
+        addressSuggestions.hidden=false;addressFields.street.setAttribute('aria-expanded','true');
+        addressSuggestStatus.textContent='Selecciona una sugerencia o continúa escribiendo.';
+      }catch(error){if(error.name!=='AbortError')addressSuggestStatus.textContent='No hay sugerencias disponibles. Puedes escribir tu dirección manualmente.';}
+    },550);
   });
+  addressFields.street.addEventListener('keydown',event=>{if(event.key==='Escape')hideSuggestions();});
+  document.addEventListener('click',event=>{if(!event.target.closest('.address-suggest-wrap'))hideSuggestions();});
   deliveryReference.addEventListener('input', () => {
     try { localStorage.setItem('kukulDeliveryReference', deliveryReference.value); } catch {}
     updateWhatsAppLink();
@@ -1040,11 +1110,11 @@ body.cart-lock{overflow:hidden}
   sendWhatsApp.addEventListener('click', (e) => {
     if (!cart.length) { e.preventDefault(); return; }
     if(getDeliveryType()==='delivery'&&!coverageValid()){e.preventDefault();showCoverage();coverageStatus.scrollIntoView({behavior:'smooth',block:'center'});return;}
-    if (getDeliveryType() === 'delivery' && !deliveryAddress.value.trim()) {
+    if (getDeliveryType() === 'delivery' && !addressComplete()) {
       e.preventDefault();
-      deliveryAddressError.textContent = 'Escribe la dirección de entrega para continuar.';
-      deliveryAddress.focus();
-      deliveryAddress.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      deliveryAddressError.textContent = 'Completa calle, número, colonia, código postal de 5 dígitos, municipio y estado.';
+      (Object.entries(addressFields).find(([key,field])=>key!=='interior'&&(!field.value.trim()||(key==='zip'&&!/^\d{5}$/.test(field.value.trim()))))?.[1]||addressFields.street).focus();
+      addressFields.street.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
     updateWhatsAppLink();
@@ -1068,6 +1138,7 @@ body.cart-lock{overflow:hidden}
 .kukul-reviews .review-card{padding:14px 0;border-bottom:1px solid #d8c9b5}
 .kukul-reviews .review-stars{color:#a66a08;font-size:1.25rem}
 .kukul-reviews .review-honeypot{position:absolute;left:-10000px}
+.address-fields{display:grid;gap:10px;margin-top:10px}.address-fields label{display:block;font-size:.88rem;font-weight:600}.address-fields input{display:block;box-sizing:border-box;width:100%;margin-top:5px;padding:11px;border:1px solid #a9a09a;border-radius:9px;font:inherit}.address-pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}.address-suggest-wrap{position:relative}.address-suggestions{position:absolute;z-index:100;background:#fff;color:#201b18;border:1px solid #b7aaa0;border-radius:10px;max-height:220px;overflow:auto;box-shadow:0 8px 24px #0003;width:100%}.address-option{display:block;width:100%;padding:11px;text-align:left;background:white;border:0;border-bottom:1px solid #eee;cursor:pointer;color:#241d19}.address-option:hover,.address-option:focus{background:#fff2d9}.address-fields .address-help{display:block;font-size:.78rem;margin-top:5px}@media(max-width:390px){.address-pair{grid-template-columns:1fr}}
 </style>
 <script src="assets/reviews.js" defer></script>
 </body>
