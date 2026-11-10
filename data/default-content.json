@@ -11,7 +11,8 @@
     "instagram": "https://www.instagram.com/kukulwings",
     "tiktok": "https://www.tiktok.com/@kukulwings",
     "deliveryFee": 10,
-    "freeDeliveryFrom": 150
+    "freeDeliveryFrom": 150,
+    "deliveryRadiusKm": 5
   },
   "images": {
     "logo": "assets/kukul-logo-dragon.png",

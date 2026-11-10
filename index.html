@@ -436,7 +436,7 @@ body.cart-lock{overflow:hidden}
     </div>
   </div>
 </section>
-</main>
+<section class="kukul-reviews" id="opiniones"><h2>⭐ Lo que dicen nuestros clientes</h2><p>Comparte tu experiencia. Publicamos los comentarios después de revisarlos.</p><div id="reviewSummary" aria-live="polite"></div><div id="publicReviews"></div><h3>Deja tu reseña</h3><form id="reviewForm" class="review-form"><label>Nombre o apodo<input name="name" maxlength="60" required autocomplete="nickname"></label><label>Calificación<select name="rating" required><option value="5">★★★★★ · 5 estrellas</option><option value="4">★★★★☆ · 4 estrellas</option><option value="3">★★★☆☆ · 3 estrellas</option><option value="2">★★☆☆☆ · 2 estrellas</option><option value="1">★☆☆☆☆ · 1 estrella</option></select></label><label>Comentario<textarea name="comment" minlength="10" maxlength="600" required rows="3"></textarea></label><label class="review-honeypot" aria-hidden="true">Sitio web<input name="website" tabindex="-1" autocomplete="off"></label><button type="submit">Enviar reseña</button><p id="reviewMessage" role="status"></p></form></section></main>
 
 <footer>
   <div class="container">
@@ -674,7 +674,7 @@ body.cart-lock{overflow:hidden}
       <div class="delivery-address" id="deliveryAddressBox" hidden>
         <label for="deliveryAddress">📍 Dirección de entrega *</label>
         <textarea id="deliveryAddress" maxlength="260" autocomplete="street-address" placeholder="Calle, número, colonia, C.P. y municipio"></textarea>
-        <span class="address-help">Escribe la dirección lo más completa posible para poder localizarte.</span>
+        <span class="address-help">Escribe la dirección lo más completa posible para poder localizarte.</span><div class="coverage-check"><button type="button" id="checkCoverage" class="coverage-button">📍 Verificar mi zona de entrega</button><p id="coverageStatus" role="status" aria-live="polite">Verifica tu ubicación para confirmar el envío.</p></div>
         <label for="deliveryReference" style="margin-top:10px">Referencias de entrega (opcional)</label>
         <input id="deliveryReference" maxlength="180" placeholder="Ej. portón negro, entre Calle A y Calle B">
         <span class="address-error" id="deliveryAddressError" aria-live="polite"></span>
@@ -730,6 +730,33 @@ body.cart-lock{overflow:hidden}
   const deliveryReference = document.querySelector('#deliveryReference');
   const deliveryAddressError = document.querySelector('#deliveryAddressError');
   const toast = document.querySelector('#cartToast');
+  const coverageStatus=document.querySelector('#coverageStatus');
+  const checkCoverage=document.querySelector('#checkCoverage');
+  let coverage=null;
+  const radius=Number(content.business.deliveryRadiusKm??5);
+  const coords=String(content.business.mapQuery||'').match(/^\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*$/);
+  const origin=coords?[Number(coords[1]),Number(coords[2])]:null;
+  const distanceKm=(lat1,lon1,lat2,lon2)=>{
+    const rad=x=>x*Math.PI/180;
+    const a=Math.sin(rad(lat2-lat1)/2)**2+Math.cos(rad(lat1))*Math.cos(rad(lat2))*Math.sin(rad(lon2-lon1)/2)**2;
+    return 6371*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+  };
+  function coverageValid(){return coverage?.ok===true&&coverage.radius===radius;}
+  function showCoverage(){if(!coverageStatus)return;coverageStatus.textContent=coverage?coverage.message:`Verifica tu ubicación para envíos dentro de ${radius} km.`;coverageStatus.dataset.state=coverage?.ok?'ok':coverage?'error':'pending';}
+  checkCoverage.addEventListener('click',()=>{
+    if(!origin||Math.abs(origin[0])>90||Math.abs(origin[1])>180){coverage={ok:false,message:'La ubicación del negocio no tiene coordenadas válidas. Contacta a Kukul Wings.'};showCoverage();renderCart();return;}
+    if(!navigator.geolocation){coverage={ok:false,message:'Tu navegador no permite verificar ubicación. Puedes recoger tu pedido en el local.'};showCoverage();renderCart();return;}
+    coverage=null;checkCoverage.disabled=true;coverageStatus.textContent='Comprobando ubicación…';renderCart();
+    navigator.geolocation.getCurrentPosition(pos=>{
+      checkCoverage.disabled=false;
+      const d=distanceKm(origin[0],origin[1],pos.coords.latitude,pos.coords.longitude);
+      const uncertainty=(pos.coords.accuracy||0)/1000;
+      const ok=d+uncertainty<=radius;
+      coverage={ok,radius,latitude:pos.coords.latitude,longitude:pos.coords.longitude,distance:d,message:ok?`¡Sí llegamos! Estás a ${d.toFixed(2)} km del negocio.`:d-uncertainty>radius?`Estás fuera de la zona de envíos (radio de ${radius} km). Puedes pedir para recoger.`:`Tu ubicación no es suficientemente precisa para confirmar el radio de ${radius} km. Intenta de nuevo o pide para recoger.`};
+      showCoverage();renderCart();
+    },()=>{checkCoverage.disabled=false;coverage={ok:false,message:'No pudimos acceder a tu ubicación. Activa el permiso e inténtalo de nuevo, o elige recoger en local.'};showCoverage();renderCart();},{enableHighAccuracy:true,timeout:12000,maximumAge:0});
+  });
+  showCoverage();
   let activeProduct = null;
   let toastTimer = null;
 
@@ -929,6 +956,7 @@ body.cart-lock{overflow:hidden}
     lines.push(`Total: ${money(total)}`);
     lines.push(`Entrega: ${delivery === 'delivery' ? 'Envío a domicilio' : 'Recoger en local'}`);
     if (delivery === 'delivery') {
+      if(coverageValid())lines.push(`📍 Ubicación verificada: https://www.google.com/maps?q=${coverage.latitude},${coverage.longitude} (${coverage.distance.toFixed(2)} km aprox.)`);
       const address = deliveryAddress.value.trim();
       const reference = deliveryReference.value.trim();
       if (address) lines.push(`📍 Dirección: ${address}`);
@@ -940,7 +968,7 @@ body.cart-lock{overflow:hidden}
   }
 
   function updateWhatsAppLink(){
-    if (!cart.length) {
+    if (!cart.length || (getDeliveryType()==='delivery'&&(!coverageValid()||!deliveryAddress.value.trim()))) {
       sendWhatsApp.href = '#';
       sendWhatsApp.setAttribute('aria-disabled','true');
       return;
@@ -1011,6 +1039,7 @@ body.cart-lock{overflow:hidden}
   });
   sendWhatsApp.addEventListener('click', (e) => {
     if (!cart.length) { e.preventDefault(); return; }
+    if(getDeliveryType()==='delivery'&&!coverageValid()){e.preventDefault();showCoverage();coverageStatus.scrollIntoView({behavior:'smooth',block:'center'});return;}
     if (getDeliveryType() === 'delivery' && !deliveryAddress.value.trim()) {
       e.preventDefault();
       deliveryAddressError.textContent = 'Escribe la dirección de entrega para continuar.';
@@ -1026,5 +1055,20 @@ body.cart-lock{overflow:hidden}
 })();
 </script>
 
+<style>
+.coverage-check{margin:12px 0;padding:12px;border:1px solid #d9b675;border-radius:12px;background:#fff9e9;color:#282016}
+.coverage-button{border:0;border-radius:9px;padding:11px 15px;background:#251a12;color:#fff;font-weight:700;cursor:pointer}
+.coverage-button:disabled{opacity:.5;cursor:wait}
+#coverageStatus{font-size:.9rem;margin:8px 0 0}
+#coverageStatus[data-state="ok"]{color:#17673b}#coverageStatus[data-state="error"]{color:#9c2c1c}
+.kukul-reviews{max-width:980px;margin:40px auto;padding:24px;background:#fff9ee;color:#221a14;border-radius:18px}
+.kukul-reviews h2{margin-top:0}.kukul-reviews .review-form{display:grid;gap:10px;max-width:520px}
+.kukul-reviews input,.kukul-reviews textarea,.kukul-reviews select{padding:12px;border:1px solid #bba88d;border-radius:9px;font:inherit;width:100%;box-sizing:border-box}
+.kukul-reviews button{background:#201b18;color:#fff;border:0;border-radius:9px;padding:12px;cursor:pointer}
+.kukul-reviews .review-card{padding:14px 0;border-bottom:1px solid #d8c9b5}
+.kukul-reviews .review-stars{color:#a66a08;font-size:1.25rem}
+.kukul-reviews .review-honeypot{position:absolute;left:-10000px}
+</style>
+<script src="assets/reviews.js" defer></script>
 </body>
 </html>
